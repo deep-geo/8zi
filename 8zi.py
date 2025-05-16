@@ -8,7 +8,7 @@ app = FastAPI()
 # Allow frontend requests (adjust origin when deploying)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace * with your frontend domain in production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -25,11 +25,39 @@ def calculate_bazi(data: BaziRequest):
     try:
         solar = Solar(data.year, data.month, data.day, data.hour, 0, 0)
         lunar = solar.getLunar()
-        return {
+        eight_char = lunar.getEightChar()
+
+        # Base Bazi Pillars
+        result = {
             "yearPillar": lunar.getYearInGanZhi(),
             "monthPillar": lunar.getMonthInGanZhi(),
             "dayPillar": lunar.getDayInGanZhi(),
-            "hourPillar": lunar.getTimeInGanZhi()
+            "hourPillar": lunar.getTimeInGanZhi(),
         }
+
+        # DaYun (10-Year Luck Pillars)
+        dayuns = []
+        for d in eight_char.getDaYun():
+            dayuns.append({
+                "startAge": d.getStartAge(),
+                "ageRange": f"{d.getStartAge()}–{d.getStartAge() + 10}",
+                "pillar": d.getGanZhi()
+            })
+        result["dayun"] = dayuns
+
+        # LiuNian (Annual Luck Pillars): Next 5 years
+        base_year = data.year
+        liunian = []
+        for i in range(5):
+            year = base_year + i
+            liu = eight_char.getLiuNian(year)
+            liunian.append({
+                "year": year,
+                "pillar": liu.getGanZhi()
+            })
+        result["liunian"] = liunian
+
+        return result
+
     except Exception as e:
         return {"error": str(e)}

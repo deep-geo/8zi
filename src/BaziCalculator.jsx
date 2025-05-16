@@ -9,10 +9,11 @@ export default function BaziCalculator() {
   });
   const [baziResult, setBaziResult] = useState(null);
   const [lang, setLang] = useState("zh");
+  const [activeTab, setActiveTab] = useState("bazi");
 
   const labels = {
     zh: {
-      title: "🧧 八字排盘计算器",
+      title: "☯️ 八字排盘计算器",
       year: "出生年份：",
       month: "出生月份：",
       day: "出生日：",
@@ -31,7 +32,7 @@ export default function BaziCalculator() {
       switchLang: "EN"
     },
     en: {
-      title: "☯️ Bazi Calculator ☯️",
+      title: "☯️ Bazi Calculator",
       year: "Year of Birth:",
       month: "Month of Birth:",
       day: "Day of Birth:",
@@ -115,57 +116,74 @@ export default function BaziCalculator() {
       </div>
 
       {baziResult && (
-        <div style={{ marginTop: "2rem", padding: "1.5rem", backgroundColor: "#f9f9f9", borderRadius: "8px" }}>
-          <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>{labels[lang].result}</h2>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th style={{ textAlign: "left", paddingBottom: "0.5rem" }}>4 Pillars</th>
-                <th style={{ textAlign: "left", paddingBottom: "0.5rem" }}>Simplified</th>
-                <th style={{ textAlign: "left", paddingBottom: "0.5rem" }}>Traditional</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{labels[lang].yearPillar}</td>
-                <td>{convert(baziResult.yearPillar)[0]}{convert(baziResult.yearPillar)[1]}</td>
-                <td>{convert(baziResult.yearPillar)[2]}</td>
-              </tr>
-              <tr>
-                <td>{labels[lang].monthPillar}</td>
-                <td>{convert(baziResult.monthPillar)[0]}{convert(baziResult.monthPillar)[1]}</td>
-                <td>{convert(baziResult.monthPillar)[2]}</td>
-              </tr>
-              <tr>
-                <td>{labels[lang].dayPillar}</td>
-                <td>{convert(baziResult.dayPillar)[0]}{convert(baziResult.dayPillar)[1]}</td>
-                <td>{convert(baziResult.dayPillar)[2]}</td>
-              </tr>
-              <tr>
-                <td>{labels[lang].hourPillar}</td>
-                <td>{convert(baziResult.hourPillar)[0]}{convert(baziResult.hourPillar)[1]}</td>
-                <td>{convert(baziResult.hourPillar)[2]}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <>
+          <div style={{ marginTop: "2rem" }}>
+            <div style={{ display: "flex", gap: "1rem", justifyContent: "center", marginBottom: "1rem" }}>
+              <button onClick={() => setActiveTab("bazi")}>🧩 4 Pillars</button>
+              <button onClick={() => setActiveTab("dayun")}>🔮 DaYun</button>
+              <button onClick={() => setActiveTab("liunian")}>📅 LiuNian</button>
+            </div>
+
+            {activeTab === "bazi" && (
+              <div style={{ padding: "1.5rem", backgroundColor: "#f9f9f9", borderRadius: "8px" }}>
+                <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>{labels[lang].result}</h2>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr>
+                      <th>4 Pillars</th><th>Simplified</th><th>Traditional</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {["yearPillar", "monthPillar", "dayPillar", "hourPillar"].map((key) => (
+                      <tr key={key}>
+                        <td>{labels[lang][key]}</td>
+                        <td>{convert(baziResult[key])[0]}{convert(baziResult[key])[1]}</td>
+                        <td>{convert(baziResult[key])[2]}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {activeTab === "dayun" && (
+              <table style={{ width: "100%", textAlign: "center", backgroundColor: "#f9f9f9" }}>
+                <thead>
+                  <tr><th>Start Age</th><th>Age Range</th><th>Luck Pillar</th></tr>
+                </thead>
+                <tbody>
+                  {baziResult.dayun?.map((d, i) => (
+                    <tr key={i}><td>{d.startAge}</td><td>{d.ageRange}</td><td>{d.pillar}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {activeTab === "liunian" && (
+              <table style={{ width: "100%", textAlign: "center", backgroundColor: "#f9f9f9" }}>
+                <thead>
+                  <tr><th>Year</th><th>Annual Pillar</th></tr>
+                </thead>
+                <tbody>
+                  {baziResult.liunian?.map((d, i) => (
+                    <tr key={i}><td>{d.year}</td><td>{d.pillar}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </>
       )}
 
       <div style={{ marginTop: "2rem", textAlign: "center", fontSize: "0.9rem", color: "#666" }}>
         {labels[lang].disclaimer}
       </div>
+
       <div style={{ marginTop: "2rem", fontSize: "0.95rem", color: "#333", lineHeight: "1.6" }}>
-  <p> <strong>📘 What is Bazi (八字)?</strong></p>
-  <p>
-    Bazi, or “Eight Characters,” is a traditional Chinese system based on your birth date and time.
-    Each person’s Bazi is made up of four pairs of characters (Year, Month, Day, Hour), known as Heavenly Stems and Earthly Branches.
-    Together, they reveal your energetic blueprint and destiny tendencies.
-  </p>
-  <p>
-    八字是根据一个人的出生年、月、日、时，组合出四个天干地支对。它是中国传统命理的重要组成部分，
-    可用于推测性格、运势、健康和人际关系等方面。
-  </p>
-</div>
+        <p><strong>📘 What is Bazi (八字)?</strong></p>
+        <p>Bazi, or “Eight Characters,” is a traditional Chinese system based on your birth date and time. Each person’s Bazi is made up of four pairs of characters (Year, Month, Day, Hour), known as Heavenly Stems and Earthly Branches. Together, they reveal your energetic blueprint and destiny tendencies.</p>
+        <p>八字是根据一个人的出生年、月、日、时，组合出四个天干地支对。它是中国传统命理的重要组成部分，可用于推测性格、运势、健康和人际关系等方面。</p>
+      </div>
     </div>
   );
 }
