@@ -23,10 +23,10 @@ export default function BaziCalculator() {
       placeholderHour: "例如 13 代表下午 1 点",
       calculate: "🪐 计算八字",
       result: "🧩 排盘结果",
-      yearPillar: "年柱：",
-      monthPillar: "月柱：",
-      dayPillar: "日柱：",
-      hourPillar: "时柱：",
+      yearPillar: "年柱",
+      monthPillar: "月柱",
+      dayPillar: "日柱",
+      hourPillar: "时柱",
       disclaimer: "本站仅供参考，不构成任何人生决策建议。",
       switchLang: "EN"
     },
@@ -42,10 +42,10 @@ export default function BaziCalculator() {
       placeholderHour: "e.g. 13 means 1 PM",
       calculate: "🪐 Calculate Bazi",
       result: "🧩 Bazi Result",
-      yearPillar: "Year Pillar:",
-      monthPillar: "Month Pillar:",
-      dayPillar: "Day Pillar:",
-      hourPillar: "Hour Pillar:",
+      yearPillar: "Year Pillar",
+      monthPillar: "Month Pillar",
+      dayPillar: "Day Pillar",
+      hourPillar: "Hour Pillar",
       disclaimer: "For reference only. Not professional advice.",
       switchLang: "中文"
     }
@@ -64,11 +64,11 @@ export default function BaziCalculator() {
   };
 
   const convert = (ganZhi) => {
-    if (!ganZhi || ganZhi.length !== 2) return ganZhi;
+    if (!ganZhi || ganZhi.length !== 2) return ["", "", ganZhi];
     const [stem, branch] = ganZhi.split("");
     const s = stemsMap[stem] || stem;
     const b = branchesMap[branch] || branch;
-    return `${s}${b} (${ganZhi})`;
+    return [s, b, ganZhi];
   };
 
   const handleChange = (e) => {
@@ -117,10 +117,37 @@ export default function BaziCalculator() {
       {baziResult && (
         <div style={{ marginTop: "2rem", padding: "1.5rem", backgroundColor: "#f9f9f9", borderRadius: "8px" }}>
           <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>{labels[lang].result}</h2>
-          <p><strong>{labels[lang].yearPillar}</strong>{convert(baziResult.yearPillar)}</p>
-          <p><strong>{labels[lang].monthPillar}</strong>{convert(baziResult.monthPillar)}</p>
-          <p><strong>{labels[lang].dayPillar}</strong>{convert(baziResult.dayPillar)}</p>
-          <p><strong>{labels[lang].hourPillar}</strong>{convert(baziResult.hourPillar)}</p>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: "left", paddingBottom: "0.5rem" }}>Pillar</th>
+                <th style={{ textAlign: "left", paddingBottom: "0.5rem" }}>Simplified</th>
+                <th style={{ textAlign: "left", paddingBottom: "0.5rem" }}>Original</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{labels[lang].yearPillar}</td>
+                <td>{convert(baziResult.yearPillar)[0]}{convert(baziResult.yearPillar)[1]}</td>
+                <td>{convert(baziResult.yearPillar)[2]}</td>
+              </tr>
+              <tr>
+                <td>{labels[lang].monthPillar}</td>
+                <td>{convert(baziResult.monthPillar)[0]}{convert(baziResult.monthPillar)[1]}</td>
+                <td>{convert(baziResult.monthPillar)[2]}</td>
+              </tr>
+              <tr>
+                <td>{labels[lang].dayPillar}</td>
+                <td>{convert(baziResult.dayPillar)[0]}{convert(baziResult.dayPillar)[1]}</td>
+                <td>{convert(baziResult.dayPillar)[2]}</td>
+              </tr>
+              <tr>
+                <td>{labels[lang].hourPillar}</td>
+                <td>{convert(baziResult.hourPillar)[0]}{convert(baziResult.hourPillar)[1]}</td>
+                <td>{convert(baziResult.hourPillar)[2]}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       )}
 
