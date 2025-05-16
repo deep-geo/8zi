@@ -154,6 +154,18 @@ export default function BaziCalculator() {
       <div style={{ marginTop: "2rem", textAlign: "center", fontSize: "0.9rem", color: "#666" }}>
         {labels[lang].disclaimer}
       </div>
+      <div style={{ marginTop: "2rem", fontSize: "0.95rem", color: "#333", lineHeight: "1.6" }}>
+  <p> <strong>📘 What is Bazi (八字)?</strong></p>
+  <p>
+    Bazi, or “Eight Characters,” is a traditional Chinese system based on your birth date and time.
+    Each person’s Bazi is made up of four pairs of characters (Year, Month, Day, Hour), known as Heavenly Stems and Earthly Branches.
+    Together, they reveal your energetic blueprint and destiny tendencies.
+  </p>
+  <p>
+    八字是根据一个人的出生年、月、日、时，组合出四个天干地支对。它是中国传统命理的重要组成部分，
+    可用于推测性格、运势、健康和人际关系等方面。
+  </p>
+</div>
     </div>
   );
 }
