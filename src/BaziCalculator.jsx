@@ -120,8 +120,8 @@ export default function BaziCalculator() {
           <div style={{ marginTop: "2rem" }}>
             <div style={{ display: "flex", gap: "1rem", justifyContent: "center", marginBottom: "1rem" }}>
               <button onClick={() => setActiveTab("bazi")}>🧩 4 Pillars</button>
-              <button onClick={() => setActiveTab("dayun")}>🔮 DaYun</button>
-              <button onClick={() => setActiveTab("liunian")}>📅 LiuNian</button>
+              <button onClick={() => setActiveTab("dayun")}>🔮 10-Year Luck (DaYun)</button>
+              <button onClick={() => setActiveTab("liunian")}>📅 Annual Lick (LiuNian)</button>
             </div>
 
             {activeTab === "bazi" && (
