@@ -51,6 +51,26 @@ export default function BaziCalculator() {
     }
   };
 
+  const stemsMap = {
+    "甲": "A", "乙": "B", "丙": "C", "丁": "D",
+    "戊": "E", "己": "F", "庚": "G", "辛": "H",
+    "壬": "I", "癸": "J"
+  };
+
+  const branchesMap = {
+    "子": "🐭", "丑": "🐮", "寅": "🐯", "卯": "🐰",
+    "辰": "🐲", "巳": "🐍", "午": "🐴", "未": "🐑",
+    "申": "🐵", "酉": "🐔", "戌": "🐶", "亥": "🐷"
+  };
+
+  const convert = (ganZhi) => {
+    if (!ganZhi || ganZhi.length !== 2) return ganZhi;
+    const [stem, branch] = ganZhi.split("");
+    const s = stemsMap[stem] || stem;
+    const b = branchesMap[branch] || branch;
+    return `${s}${b} (${ganZhi})`;
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -97,10 +117,10 @@ export default function BaziCalculator() {
       {baziResult && (
         <div style={{ marginTop: "2rem", padding: "1.5rem", backgroundColor: "#f9f9f9", borderRadius: "8px" }}>
           <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>{labels[lang].result}</h2>
-          <p><strong>{labels[lang].yearPillar}</strong>{baziResult.yearPillar}</p>
-          <p><strong>{labels[lang].monthPillar}</strong>{baziResult.monthPillar}</p>
-          <p><strong>{labels[lang].dayPillar}</strong>{baziResult.dayPillar}</p>
-          <p><strong>{labels[lang].hourPillar}</strong>{baziResult.hourPillar}</p>
+          <p><strong>{labels[lang].yearPillar}</strong>{convert(baziResult.yearPillar)}</p>
+          <p><strong>{labels[lang].monthPillar}</strong>{convert(baziResult.monthPillar)}</p>
+          <p><strong>{labels[lang].dayPillar}</strong>{convert(baziResult.dayPillar)}</p>
+          <p><strong>{labels[lang].hourPillar}</strong>{convert(baziResult.hourPillar)}</p>
         </div>
       )}
 
