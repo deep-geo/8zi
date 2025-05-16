@@ -120,9 +120,9 @@ export default function BaziCalculator() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr>
-                <th style={{ textAlign: "left", paddingBottom: "0.5rem" }}>Pillar</th>
+                <th style={{ textAlign: "left", paddingBottom: "0.5rem" }}>4 Pillars</th>
                 <th style={{ textAlign: "left", paddingBottom: "0.5rem" }}>Simplified</th>
-                <th style={{ textAlign: "left", paddingBottom: "0.5rem" }}>Original</th>
+                <th style={{ textAlign: "left", paddingBottom: "0.5rem" }}>Traditional</th>
               </tr>
             </thead>
             <tbody>
