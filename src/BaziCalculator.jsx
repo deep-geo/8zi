@@ -31,7 +31,7 @@ export default function BaziCalculator() {
       switchLang: "EN"
     },
     en: {
-      title: "🧧 Bazi Calculator",
+      title: "☯️ Bazi Calculator ☯️",
       year: "Year of Birth:",
       month: "Month of Birth:",
       day: "Day of Birth:",
