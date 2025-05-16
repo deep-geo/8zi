@@ -22,7 +22,7 @@ export default function BaziCalculator() {
   };
 
   const calculateBazi = async () => {
-    const response = await fetch("/api/calculate", {
+    const response = await fetch("https://eightzi.onrender.com/api/calculate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
