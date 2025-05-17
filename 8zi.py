@@ -29,6 +29,7 @@ def calculate_bazi(data: BaziRequest):
         lunar = solar.getLunar()
         # eight_char = lunar.getEightChar(gender=1)  # 1=male, 0=female
         eight_char = lunar.getEightChar()
+        eight_char.setGender(1)
 
         # Debug: print 4 pillars
         print("📜 Pillars:")
