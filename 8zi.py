@@ -23,9 +23,22 @@ class BaziRequest(BaseModel):
 @app.post("/api/calculate")
 def calculate_bazi(data: BaziRequest):
     try:
+        print(f"📥 Received input: {data}")
+
         solar = Solar(data.year, data.month, data.day, data.hour, 0, 0)
         lunar = solar.getLunar()
-        eight_char = lunar.getEightChar()
+        eight_char = lunar.getEightChar(gender=1)
+
+        # Debug: print 4 pillars
+        print("📜 Pillars:")
+        print("  Year:", lunar.getYearInGanZhi())
+        print("  Month:", lunar.getMonthInGanZhi())
+        print("  Day:", lunar.getDayInGanZhi())
+        print("  Hour:", lunar.getTimeInGanZhi())
+
+        # Debug: method check
+        print("🔍 has getDaYun:", hasattr(eight_char, "getDaYun"))
+        print("🔍 has getLiuNian:", hasattr(eight_char, "getLiuNian"))
 
         result = {
             "yearPillar": lunar.getYearInGanZhi(),
@@ -36,30 +49,38 @@ def calculate_bazi(data: BaziRequest):
             "liunian": []
         }
 
-        # Optional DaYun support
+        # DaYun with debugging
         if hasattr(eight_char, "getDaYun"):
-            dayuns = []
-            for d in eight_char.getDaYun():
-                dayuns.append({
-                    "startAge": d.getStartAge(),
-                    "ageRange": f"{d.getStartAge()}–{d.getStartAge() + 10}",
-                    "pillar": d.getGanZhi()
-                })
-            result["dayun"] = dayuns
+            try:
+                dayun_raw = eight_char.getDaYun()
+                print(f"✅ getDaYun() returned {len(dayun_raw)} items")
+                for d in dayun_raw:
+                    print("  ➤", d.getStartAge(), d.getGanZhi())
+                    result["dayun"].append({
+                        "startAge": d.getStartAge(),
+                        "ageRange": f"{d.getStartAge()}–{d.getStartAge() + 10}",
+                        "pillar": d.getGanZhi()
+                    })
+            except Exception as e:
+                print("❌ Error calling getDaYun():", e)
 
-        # Optional LiuNian support
+        # LiuNian with debugging
         if hasattr(eight_char, "getLiuNian"):
-            liunian = []
-            for i in range(5):
-                year = data.year + i
-                liu = eight_char.getLiuNian(year)
-                liunian.append({
-                    "year": year,
-                    "pillar": liu.getGanZhi()
-                })
-            result["liunian"] = liunian
+            try:
+                for i in range(5):
+                    year = data.year + i
+                    ln = eight_char.getLiuNian(year)
+                    print(f"📅 LiuNian {year}: {ln.getGanZhi()}")
+                    result["liunian"].append({
+                        "year": year,
+                        "pillar": ln.getGanZhi()
+                    })
+            except Exception as e:
+                print("❌ Error calling getLiuNian():", e)
 
+        print("✅ Final result:", result)
         return result
 
     except Exception as e:
+        print("❌ Exception in calculate_bazi:", e)
         return {"error": str(e)}
