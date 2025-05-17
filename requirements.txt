@@ -1,4 +1,4 @@
 fastapi
 uvicorn
-lunar_python>=1.6.0
+git+https://github.com/6tail/lunar-python.git@master
 python-multipart
