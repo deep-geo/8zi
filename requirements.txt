@@ -1,4 +1,4 @@
 fastapi
 uvicorn
-lunar_python
+lunar_python>=1.6.0
 python-multipart
