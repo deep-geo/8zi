@@ -54,34 +54,33 @@ def calculate_bazi(data: BaziRequest):
         print("📜 Pillars:", result["yearPillar"], result["monthPillar"], result["dayPillar"], result["hourPillar"])
 
         # DaYun
-        if hasattr(eight_char, "getDaYun"):
-            try:
-                dy_list = eight_char.getDaYun(gender=data.gender)
-                print(f"📌 getDaYun(): {len(dy_list)} items")
-                result["dayun"] = [{
-                    "startAge": dy.getStartAge(),
-                    "ageRange": f"{dy.getStartAge()}–{dy.getStartAge() + 10}",
-                    "pillar": dy.getGanZhi()
-                } for dy in dy_list]
-            except Exception as e:
-                print(f"❌ Error in getDaYun(): {e}")
+        try:
+            yun = eight_char.getYun(gender=data.gender)
+            dayun_list = yun.getDaYun()
+            print(f"📌 getDaYun(): {len(dayun_list)} items")
+            result["dayun"] = [{
+                "startAge": dy.getStartAge(),
+                "ageRange": f"{dy.getStartAge()}–{dy.getStartAge() + 10}",
+                "pillar": dy.getGanZhi()
+            } for dy in dayun_list]
+        except Exception as e:
+            print(f"❌ Error in getDaYun(): {e}")
 
         # LiuNian
-        if hasattr(eight_char, "getLiuNian"):
-            base_year = data.year
+        try:
             liunian_list = []
-            for i in range(5):
+            base_year = data.year
+            for i in range(5):  # next 5 years
                 y = base_year + i
-                try:
-                    liu = eight_char.getLiuNian(y, gender=data.gender)
-                    liunian_list.append({
-                        "year": y,
-                        "pillar": liu.getGanZhi()
-                    })
-                    print(f"📅 LiuNian {y}: {liu.getGanZhi()}")
-                except Exception as e:
-                    print(f"❌ Error in getLiuNian({y}): {e}")
+                liu = dayun_list[0].getLiuNian(y)
+                liunian_list.append({
+                    "year": y,
+                    "pillar": liu.getGanZhi()
+                })
+                print(f"📅 LiuNian {y}: {liu.getGanZhi()}")
             result["liunian"] = liunian_list
+        except Exception as e:
+            print(f"❌ Error in getLiuNian: {e}")
 
         print("✅ Final result ready")
         return result
@@ -89,6 +88,8 @@ def calculate_bazi(data: BaziRequest):
     except Exception as e:
         print("❌ Exception in calculate_bazi:", e)
         return {"error": str(e)}
+
+        
 
 @app.get("/")
 def read_root():
