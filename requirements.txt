@@ -1,4 +1,4 @@
 fastapi
-uvicorn
+uvicorn[standard]
 python-multipart
 git+https://github.com/6tail/lunar-python.git@e59e1c5
