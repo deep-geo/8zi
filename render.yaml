@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: eightzi-api
+    env: python
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn 8zi:app --host 0.0.0.0 --port 10000
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
