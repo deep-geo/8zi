@@ -15,17 +15,11 @@ app.add_middleware(
 )
 
 @app.get("/debug")
-def debug_dayun():
-    try:
-        from lunar_python import Solar
-        s = Solar(1975, 1, 2, 16, 0, 0)
-        l = s.getLunar()
-        l._gender = 1  # ✅ 使用属性赋值设置性别
-        e = l.getEightChar()
-        dy_list = e.getDaYun()
-        return [f"{d.getStartAge()}岁起 {d.getGanZhi()}" for d in dy_list]
-    except Exception as ex:
-        return {"error": str(ex)}
+def debug_lunar():
+    from lunar_python import Lunar
+    return {
+        "has_gender_param": "gender" in Lunar.getEightChar.__code__.co_varnames
+    }
 
 
 
