@@ -14,6 +14,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/debug")
+def debug_dayun():
+    from lunar_python import Solar
+    s = Solar(1975, 1, 2, 16, 0, 0)
+    l = s.getLunar()
+    e = l.getEightChar()
+    e.setGender(1)
+    dy_list = e.getDaYun()
+    return [f"{d.getStartAge()}岁起 {d.getGanZhi()}" for d in dy_list]
+
+
+
 class BaziRequest(BaseModel):
     year: int
     month: int
