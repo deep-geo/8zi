@@ -29,6 +29,7 @@ class BaziRequest(BaseModel):
     hour: int  # 0–23
     gender: int = 1  # 1 = male, 0 = female
 
+
 @app.post("/api/calculate")
 def calculate_bazi(data: BaziRequest):
     try:
@@ -67,30 +68,24 @@ def calculate_bazi(data: BaziRequest):
         except Exception as e:
             print(f"❌ Error in getDaYun(): {e}")
 
-        # LiuNian
+        # LiuNian (Use yearly solar start date to get correct year pillar)
         try:
             liunian_list = []
-            current_age = 2025 - data.year
-            current_dayun = next((dy for dy in dayun_list if dy.getStartAge() <= current_age < dy.getStartAge() + 10 and dy.getGanZhi()), None)
-            if current_dayun:
-                for i in range(5):
-                    y = data.year + i
-                    try:
-                        liu_list = current_dayun.getLiuNian(y)
-                        if liu_list:
-                            liunian_list.append({
-                                "year": y,
-                                "pillar": liu_list[0].getGanZhi()
-                            })
-                            print(f"📅 LiuNian {y}: {liu_list[0].getGanZhi()}")
-                    except Exception as e:
-                        print(f"❌ Error in getLiuNian({y}): {e}")
-            else:
-                print("⚠️ 当前年龄未命中有效大运")
-
+            for i in range(5):  # e.g., next 5 years
+                y = 2025 + i
+                try:
+                    lunar_y = Solar(y, 1, 1).getLunar()
+                    ec_y = lunar_y.getEightChar()
+                    liunian_list.append({
+                        "year": y,
+                        "pillar": ec_y.getYear()
+                    })
+                    print(f"📅 LiuNian {y}: {ec_y.getYear()}")
+                except Exception as e:
+                    print(f"❌ Error in LiuNian({y}): {e}")
             result["liunian"] = liunian_list
         except Exception as e:
-            print(f"❌ Error in getLiuNian: {e}")
+            print(f"❌ Error in liunian block: {e}")
 
         return result
 
