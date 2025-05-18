@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from lunar_python import Solar
+import logging
 
 app = FastAPI()
 
@@ -69,20 +70,28 @@ def calculate_bazi(data: BaziRequest):
         # LiuNian
         try:
             liunian_list = []
-            base_year = data.year
-            for i in range(5):  # next 5 years
-                y = base_year + i
-                liu = dayun_list[0].getLiuNian(y)
-                liunian_list.append({
-                    "year": y,
-                    "pillar": liu.getGanZhi()
-                })
-                print(f"📅 LiuNian {y}: {liu.getGanZhi()}")
+            current_age = 2025 - data.year
+            current_dayun = next((dy for dy in dayun_list if dy.getStartAge() <= current_age < dy.getStartAge() + 10 and dy.getGanZhi()), None)
+            if current_dayun:
+                for i in range(5):
+                    y = data.year + i
+                    try:
+                        liu_list = current_dayun.getLiuNian(y)
+                        if liu_list:
+                            liunian_list.append({
+                                "year": y,
+                                "pillar": liu_list[0].getGanZhi()
+                            })
+                            print(f"📅 LiuNian {y}: {liu_list[0].getGanZhi()}")
+                    except Exception as e:
+                        print(f"❌ Error in getLiuNian({y}): {e}")
+            else:
+                print("⚠️ 当前年龄未命中有效大运")
+
             result["liunian"] = liunian_list
         except Exception as e:
             print(f"❌ Error in getLiuNian: {e}")
 
-        print("✅ Final result ready")
         return result
 
     except Exception as e:
