@@ -46,7 +46,8 @@ def calculate_bazi(data: BaziRequest):
 
         # 设置性别（v1.3.12 用 setGender 方法）
         lunar._gender = data.gender  # ✅ 兼容 v1.3.12，通过 Lunar 实例设置性别
-        eight_char = lunar.getEightChar()
+        #eight_char = lunar.getEightChar()
+        eight_char = lunar.getEightChar(gender=data.gender)
         print("✅ Gender set to male")
         # 输出四柱
         result = {
