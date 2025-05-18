@@ -21,8 +21,6 @@ def debug_lunar():
         "has_gender_param": "gender" in Lunar.getEightChar.__code__.co_varnames
     }
 
-
-
 class BaziRequest(BaseModel):
     year: int
     month: int
@@ -38,12 +36,11 @@ def calculate_bazi(data: BaziRequest):
         solar = Solar(data.year, data.month, data.day, data.hour, 0, 0)
         lunar = solar.getLunar()
 
-        # 设置性别（v1.3.12 用 setGender 方法）
-        lunar._gender = data.gender  # ✅ 兼容 v1.3.12，通过 Lunar 实例设置性别
-        #eight_char = lunar.getEightChar()
+        lunar._gender = data.gender
         eight_char = lunar.getEightChar(gender=data.gender)
-        print("✅ Gender set to male")
-        # 输出四柱
+
+        print("✅ Gender set to", "male" if data.gender == 1 else "female")
+
         result = {
             "yearPillar": lunar.getYearInGanZhi(),
             "monthPillar": lunar.getMonthInGanZhi(),
@@ -54,13 +51,12 @@ def calculate_bazi(data: BaziRequest):
             "liunian": []
         }
 
-        # Debug 输出
         print("📜 Pillars:", result["yearPillar"], result["monthPillar"], result["dayPillar"], result["hourPillar"])
 
-        # 大运（DaYun）
+        # DaYun
         if hasattr(eight_char, "getDaYun"):
             try:
-                dy_list = eight_char.getDaYun()
+                dy_list = eight_char.getDaYun(gender=data.gender)
                 print(f"📌 getDaYun(): {len(dy_list)} items")
                 result["dayun"] = [{
                     "startAge": dy.getStartAge(),
@@ -70,14 +66,14 @@ def calculate_bazi(data: BaziRequest):
             except Exception as e:
                 print(f"❌ Error in getDaYun(): {e}")
 
-        # 流年（LiuNian）
+        # LiuNian
         if hasattr(eight_char, "getLiuNian"):
             base_year = data.year
             liunian_list = []
             for i in range(5):
                 y = base_year + i
                 try:
-                    liu = eight_char.getLiuNian(y)
+                    liu = eight_char.getLiuNian(y, gender=data.gender)
                     liunian_list.append({
                         "year": y,
                         "pillar": liu.getGanZhi()
@@ -93,7 +89,6 @@ def calculate_bazi(data: BaziRequest):
     except Exception as e:
         print("❌ Exception in calculate_bazi:", e)
         return {"error": str(e)}
-    
 
 @app.get("/")
 def read_root():
