@@ -28,9 +28,12 @@ def calculate_bazi(data: BaziRequest):
         solar = Solar(data.year, data.month, data.day, data.hour, 0, 0)
         lunar = solar.getLunar()
         # eight_char = lunar.getEightChar(gender=1)  # 1=male, 0=female
+        # eight_char = lunar.getEightChar()
+        # if hasattr(eight_char, "_gender"):
+        #     setattr(eight_char, "_gender", 1)  # 1 = male
+        lunar._gender = 1  # Set gender at Lunar level
         eight_char = lunar.getEightChar()
-        if hasattr(eight_char, "_gender"):
-            setattr(eight_char, "_gender", 1)  # 1 = male
+
 
 
         # Debug: print 4 pillars
