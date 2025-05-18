@@ -99,3 +99,8 @@ def calculate_bazi(data: BaziRequest):
     except Exception as e:
         print("❌ Exception in calculate_bazi:", e)
         return {"error": str(e)}
+    
+
+@app.get("/")
+def read_root():
+    return {"message": "Bazi API is live 🎋"}

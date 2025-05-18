@@ -1,4 +1,5 @@
+--no-cache-dir
 fastapi
 uvicorn
-git+https://github.com/6tail/lunar-python.git@e59e1c5
 python-multipart
+git+https://github.com/6tail/lunar-python.git@e59e1c5
