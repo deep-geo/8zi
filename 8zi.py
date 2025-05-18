@@ -16,13 +16,16 @@ app.add_middleware(
 
 @app.get("/debug")
 def debug_dayun():
-    from lunar_python import Solar
-    s = Solar(1975, 1, 2, 16, 0, 0)
-    l = s.getLunar()
-    e = l.getEightChar()
-    e.setGender(1)
-    dy_list = e.getDaYun()
-    return [f"{d.getStartAge()}岁起 {d.getGanZhi()}" for d in dy_list]
+    try:
+        from lunar_python import Solar
+        s = Solar(1975, 1, 2, 16, 0, 0)
+        l = s.getLunar()
+        l._gender = 1  # ✅ 使用属性赋值设置性别
+        e = l.getEightChar()
+        dy_list = e.getDaYun()
+        return [f"{d.getStartAge()}岁起 {d.getGanZhi()}" for d in dy_list]
+    except Exception as ex:
+        return {"error": str(ex)}
 
 
 
@@ -31,6 +34,7 @@ class BaziRequest(BaseModel):
     month: int
     day: int
     hour: int  # 0–23
+    gender: int = 1  # 1 = male, 0 = female
 
 @app.post("/api/calculate")
 def calculate_bazi(data: BaziRequest):
@@ -41,17 +45,16 @@ def calculate_bazi(data: BaziRequest):
         lunar = solar.getLunar()
 
         # 设置性别（v1.3.12 用 setGender 方法）
+        lunar._gender = data.gender  # ✅ 兼容 v1.3.12，通过 Lunar 实例设置性别
         eight_char = lunar.getEightChar()
-        if hasattr(eight_char, "setGender"):
-            eight_char.setGender(1)  # 1 = male, 0 = female
-            print("✅ Gender set to male")
-
+        print("✅ Gender set to male")
         # 输出四柱
         result = {
             "yearPillar": lunar.getYearInGanZhi(),
             "monthPillar": lunar.getMonthInGanZhi(),
             "dayPillar": lunar.getDayInGanZhi(),
             "hourPillar": lunar.getTimeInGanZhi(),
+            "gender": data.gender,
             "dayun": [],
             "liunian": []
         }
