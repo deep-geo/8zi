@@ -14,18 +14,31 @@ export default function BaziCalculator() {
   const splitInterpretation = (interpretationText) => {
     if (!interpretationText) return { personality: "", decadeLuck: "", annualLuck: "" };
   
-    const personalityMatch = interpretationText.match(/\*\*1\..*?\*\*(.*?)(\*\*2\.|\n\*\*2\.)/s);
-    const decadeLuckMatch = interpretationText.match(/\*\*2\..*?\*\*(.*?)(\*\*3\.|\n\*\*3\.)/s);
-    const annualLuckMatch = interpretationText.match(/\*\*5\..*?Annual Luck.*?\*\*(.*?)(\*\*6\.|\n\*\*6\.)/s);
+    // Normalize the text: remove duplicated markdown bold numbers
+    const cleanText = interpretationText.replace(/\*\*\d+\.\*\*/g, (match) => match.replace(/\*\*/g, ""));
+  
+    // Use regex to extract sections between known numbered blocks
+    const matchPersonality = cleanText.match(/1\.\s*General Personality Traits.*?(?=2\.)/s);
+    const matchDecadeLuck = cleanText.match(/2\.\s*Career Opportunities and Challenges.*?(?=3\.)/s);
+    const matchAnnualLuck = cleanText.match(/5\.\s*Special Notes from Annual Luck Trends.*?(?=6\.|Advice|Summary|\*\*6\.)/s);
+  
+    const safeTrim = (block) => block ? block.trim().replace(/\*+$/, "") : "";
   
     return {
-      personality: personalityMatch ? "**1. General Personality Traits**" + personalityMatch[1].trim() : "",
-      decadeLuck: decadeLuckMatch ? "**2. Career Opportunities and Challenges**" + decadeLuckMatch[1].trim() : "",
-      annualLuck: annualLuckMatch ? "**5. Special Notes from Annual Luck Trends**" + annualLuckMatch[1].trim() : "",
+      personality: matchPersonality ? "## Personality\n\n" + safeTrim(matchPersonality[0]) : "",
+      decadeLuck: matchDecadeLuck && matchDecadeLuck[0].length > 80
+        ? "## Decade Luck\n\n" + safeTrim(matchDecadeLuck[0])
+        : "",  // Only include if it has content
+      annualLuck: matchAnnualLuck && matchAnnualLuck[0].length > 80
+        ? "## Annual Luck\n\n" + safeTrim(matchAnnualLuck[0])
+        : "",
     };
   };
-  
-  const { personality, decadeLuck, annualLuck } = splitInterpretation(baziResult?.interpretation);
+
+  const isError = baziResult?.interpretation?.includes("⚠️ Sorry");
+  const { personality, decadeLuck, annualLuck } = isError
+    ? { personality: baziResult.interpretation, decadeLuck: "", annualLuck: "" }
+    : splitInterpretation(baziResult?.interpretation);
 
   const labels = {
     zh: {
@@ -86,7 +99,15 @@ export default function BaziCalculator() {
 
     const interpretationData = await interpretResponse.json();
     console.log("Gemini interpretation:", interpretationData);  // <-- Add this
-    data.interpretation = interpretationData.interpretation;
+    // data.interpretation = interpretationData.interpretation;
+
+    // 🛡️ Error handling: if Gemini failed, set fallback interpretation
+    if (interpretationData?.error) {
+      data.interpretation = "⚠️ Sorry, the AI failed to generate a reading.";
+    } else {
+      data.interpretation = interpretationData.interpretation;
+    }
+
     setBaziResult(data);
   };
 
