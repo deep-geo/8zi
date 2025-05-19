@@ -121,6 +121,9 @@ export default function BaziCalculator() {
                 ))}
               </tbody>
             </table>
+            {sections[0] && (
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[0]}</ReactMarkdown>
+            )}
           </div>
 
           <div style={{ marginTop: "1.5rem", backgroundColor: "#eef8ff", padding: "1rem", borderRadius: "8px" }}>
@@ -133,6 +136,9 @@ export default function BaziCalculator() {
                 ))}
               </tbody>
             </table>
+            {sections[1] && (
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[1]}</ReactMarkdown>
+            )}
           </div>
 
           <div style={{ marginTop: "1.5rem", backgroundColor: "#fff6ec", padding: "1rem", borderRadius: "8px" }}>
@@ -145,13 +151,10 @@ export default function BaziCalculator() {
                 ))}
               </tbody>
             </table>
+            {sections[2] && (
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[2]}</ReactMarkdown>
+            )}
           </div>
-
-          {sections.map((section, idx) => (
-            <div key={idx} style={{ marginTop: "2rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{section}</ReactMarkdown>
-            </div>
-          ))}
         </div>
       )}
 
