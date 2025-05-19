@@ -3,6 +3,9 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from lunar_python import Solar
 import logging
+import os
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 app = FastAPI()
 
@@ -93,7 +96,64 @@ def calculate_bazi(data: BaziRequest):
         print("❌ Exception in calculate_bazi:", e)
         return {"error": str(e)}
 
-        
+from fastapi import Request
+import requests
+
+@app.post("/api/interpret")
+async def interpret_bazi(request: Request):
+    try:
+        body = await request.json()
+        year_pillar = body.get("yearPillar")
+        month_pillar = body.get("monthPillar")
+        day_pillar = body.get("dayPillar")
+        hour_pillar = body.get("hourPillar")
+        dayun = body.get("dayun", [])
+        liunian = body.get("liunian", [])
+
+        prompt = f"""
+You are a professional Chinese metaphysics consultant. Please interpret the following Bazi (Four Pillars of Destiny) chart for a Western audience. 
+
+### Four Pillars:
+- Year Pillar: {year_pillar}
+- Month Pillar: {month_pillar}
+- Day Pillar: {day_pillar}
+- Hour Pillar: {hour_pillar}
+
+### Decade Luck (DaYun):
+{dayun}
+
+### Annual Luck (LiuNian):
+{liunian}
+
+Explain:
+1. General personality traits based on the Day Pillar.
+2. Career opportunities and challenges during the current Decade Luck.
+3. Financial implications.
+4. Health notes if any.
+5. Special notes from Annual Luck trends.
+6. Clear advice and summary in a Western-friendly tone.
+
+Structure it clearly using markdown.
+"""
+
+        response = requests.post(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+            headers={"Content-Type": "application/json"},
+            params={"key": GEMINI_API_KEY},
+            json={
+                "contents": [{
+                    "parts": [{"text": prompt}]
+                }]
+            }
+        )
+
+        gemini_reply = response.json()
+        message = gemini_reply["candidates"][0]["content"]["parts"][0]["text"]
+        return {"interpretation": message.strip()}
+
+    except Exception as e:
+        print("❌ Error in interpret_bazi:", e)
+        return {"error": str(e)}      
 
 @app.get("/")
 def read_root():
