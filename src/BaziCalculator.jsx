@@ -10,12 +10,12 @@ export default function BaziCalculator() {
   const [lang, setLang] = useState("en");
 
   const splitInterpretation = (interpretationText) => {
-    if (!interpretationText) return { personality: "", decadeLuck: "", annualLuck: "" };
+    if (!interpretationText) return { personality: "", decadeLuck: "", annualLuck: "", takeaways: "" };
   
-    // Match sections by bold heading numbers like "**1.", "**2." etc.
     const matchPersonality = interpretationText.match(/\*\*1\..*?(?=\*\*2\.)/s);
     const matchDecadeLuck = interpretationText.match(/\*\*2\..*?(?=\*\*3\.|\*\*4\.|\*\*5\.|\*\*6\.|$)/s);
     const matchAnnualLuck = interpretationText.match(/\*\*5\..*?(?=\*\*6\.|Advice|Summary|$)/s);
+    const matchTakeaways = interpretationText.match(/\*\*6\..*/s); // Everything from "**6." onward
   
     const safeTrim = (text) => text?.trim().replace(/\*+$/, "") || "";
   
@@ -27,13 +27,15 @@ export default function BaziCalculator() {
       annualLuck: matchAnnualLuck && matchAnnualLuck[0].length > 80
         ? "## Annual Luck\n\n" + safeTrim(matchAnnualLuck[0])
         : "",
+      takeaways: matchTakeaways ? "## Key Takeaways & Advice\n\n" + safeTrim(matchTakeaways[0]) : "",
     };
   };
 
   const isError = baziResult?.interpretation?.includes("⚠️ Sorry");
-  const { personality, decadeLuck, annualLuck } = isError
-    ? { personality: baziResult.interpretation, decadeLuck: "", annualLuck: "" }
-    : splitInterpretation(baziResult?.interpretation);
+
+  const { personality, decadeLuck, annualLuck, takeaways } = isError
+  ? { personality: baziResult.interpretation, decadeLuck: "", annualLuck: "", takeaways: "" }
+  : splitInterpretation(baziResult?.interpretation);
 
   const labels = {
     zh: {
@@ -209,6 +211,14 @@ export default function BaziCalculator() {
         <h3>📖 Gemini AI Forecast</h3>
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {annualLuck}
+        </ReactMarkdown>
+      </div>
+
+      {/* 4️⃣ Gemini Final Advice */}
+      <div style={{ marginTop: "1.5rem", backgroundColor: "#eaf8ea", padding: "1rem", borderRadius: "8px" }}>
+        <h3>🎯 Gemini Summary & Advice</h3>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {takeaways}
         </ReactMarkdown>
       </div>
     </div>
