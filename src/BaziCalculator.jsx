@@ -87,6 +87,24 @@ export default function BaziCalculator() {
       body: JSON.stringify(formData),
     });
     const data = await response.json();
+
+    // 👉 Call interpret API after Bazi is ready
+    const interpretResponse = await fetch("https://eightzi.onrender.com/api/interpret", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        yearPillar: data.yearPillar,
+        monthPillar: data.monthPillar,
+        dayPillar: data.dayPillar,
+        hourPillar: data.hourPillar,
+        dayun: data.dayun,
+        liunian: data.liunian,
+      }),
+    });
+
+    const interpretationData = await interpretResponse.json();
+    data.interpretation = interpretationData.interpretation;
+
     setBaziResult(data);
   };
 
