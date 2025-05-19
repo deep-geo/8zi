@@ -10,27 +10,26 @@ export default function BaziCalculator() {
   const [lang, setLang] = useState("en");
 
 
-  // Updated split function to match Gemini output format
   const splitInterpretation = (interpretationText) => {
     if (!interpretationText) return { personality: "", decadeLuck: "", annualLuck: "" };
   
-    // Normalize the text: remove duplicated markdown bold numbers
-    const cleanText = interpretationText.replace(/\*\*\d+\.\*\*/g, (match) => match.replace(/\*\*/g, ""));
+    // Normalize the section numbers, strip ** for easier parsing
+    const cleanText = interpretationText.replace(/\*\*(\d+)\.\*\*/g, "$1.");
   
-    // Use regex to extract sections between known numbered blocks
-    const matchPersonality = cleanText.match(/1\.\s*General Personality Traits.*?(?=2\.)/s);
-    const matchDecadeLuck = cleanText.match(/2\.\s*Career Opportunities and Challenges.*?(?=3\.)/s);
-    const matchAnnualLuck = cleanText.match(/5\.\s*Special Notes from Annual Luck Trends.*?(?=6\.|Advice|Summary|\*\*6\.)/s);
+    // Match sections by numbers only, ignoring titles
+    const matchPersonality = cleanText.match(/1\.\s*(.*?)\s*(?=2\.)/s);
+    const matchDecadeLuck = cleanText.match(/2\.\s*(.*?)\s*(?=3\.|$)/s);
+    const matchAnnualLuck = cleanText.match(/3\.\s*(.*?)\s*(?=4\.|Advice|Summary|$)/s);
   
     const safeTrim = (block) => block ? block.trim().replace(/\*+$/, "") : "";
   
     return {
-      personality: matchPersonality ? "## Personality\n\n" + safeTrim(matchPersonality[0]) : "",
-      decadeLuck: matchDecadeLuck && matchDecadeLuck[0].length > 80
-        ? "## Decade Luck\n\n" + safeTrim(matchDecadeLuck[0])
-        : "",  // Only include if it has content
-      annualLuck: matchAnnualLuck && matchAnnualLuck[0].length > 80
-        ? "## Annual Luck\n\n" + safeTrim(matchAnnualLuck[0])
+      personality: matchPersonality ? "## Personality\n\n" + safeTrim(matchPersonality[1]) : "",
+      decadeLuck: matchDecadeLuck && matchDecadeLuck[1].length > 80
+        ? "## Decade Luck\n\n" + safeTrim(matchDecadeLuck[1])
+        : "",
+      annualLuck: matchAnnualLuck && matchAnnualLuck[1].length > 80
+        ? "## Annual Luck\n\n" + safeTrim(matchAnnualLuck[1])
         : "",
     };
   };
