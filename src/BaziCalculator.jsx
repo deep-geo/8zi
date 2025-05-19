@@ -33,9 +33,9 @@ export default function BaziCalculator() {
 
   const isError = baziResult?.interpretation?.includes("⚠️ Sorry");
 
-  const { personality, decadeLuck, annualLuck, takeaways } = isError
-  ? { personality: baziResult.interpretation, decadeLuck: "", annualLuck: "", takeaways: "" }
-  : splitInterpretation(baziResult?.interpretation);
+    const { personality, decadeLuck, annualLuck, takeaways } = isError
+    ? { personality: baziResult.interpretation, decadeLuck: "", annualLuck: "", takeaways: "" }
+    : splitInterpretation(baziResult?.interpretation);
 
   const labels = {
     zh: {
@@ -188,7 +188,7 @@ export default function BaziCalculator() {
 
       {/* 2️⃣ Gemini after DaYun */}
       <div style={{ marginTop: "1rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
-        <h3>📖 Gemini AI Insights</h3>
+        {/*<h3>📖 Insights</h3>*/}
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {decadeLuck}
         </ReactMarkdown>
@@ -208,7 +208,7 @@ export default function BaziCalculator() {
 
       {/* 3️⃣ Gemini after LiuNian */}
       <div style={{ marginTop: "1rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
-        <h3>📖 Gemini AI Forecast</h3>
+        {/*<h3>📖 Forecast</h3>*/}
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {annualLuck}
         </ReactMarkdown>
@@ -216,7 +216,7 @@ export default function BaziCalculator() {
 
       {/* 4️⃣ Gemini Final Advice */}
       <div style={{ marginTop: "1.5rem", backgroundColor: "#eaf8ea", padding: "1rem", borderRadius: "8px" }}>
-        <h3>🎯 Gemini Summary & Advice</h3>
+        {/*<h3>🎯 Summary & Advice</h3>*/}
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {takeaways}
         </ReactMarkdown>
