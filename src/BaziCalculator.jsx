@@ -3,7 +3,9 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 export default function BaziCalculator() {
-  const [formData, setFormData] = useState({ year: "", month: "", day: "", hour: "", gender: "1" });
+  const [formData, setFormData] = useState({
+    year: "", month: "", day: "", hour: "", gender: "1"
+  });
   const [baziResult, setBaziResult] = useState(null);
   const [lang, setLang] = useState("en");
 
@@ -26,8 +28,14 @@ export default function BaziCalculator() {
     }
   };
 
-  const stemsMap = { "甲": "A", "乙": "B", "丙": "C", "丁": "D", "戊": "E", "己": "F", "庚": "G", "辛": "H", "壬": "I", "癸": "J" };
-  const branchesMap = { "子": "🐭", "丑": "🐮", "寅": "🐯", "卯": "🐰", "辰": "🐲", "巳": "🐍", "午": "🐴", "未": "🐑", "申": "🐵", "酉": "🐔", "戌": "🐶", "亥": "🐷" };
+  const stemsMap = {
+    "甲": "A", "乙": "B", "丙": "C", "丁": "D", "戊": "E", "己": "F",
+    "庚": "G", "辛": "H", "壬": "I", "癸": "J"
+  };
+  const branchesMap = {
+    "子": "🐭", "丑": "🐮", "寅": "🐯", "卯": "🐰", "辰": "🐲", "巳": "🐍",
+    "午": "🐴", "未": "🐑", "申": "🐵", "酉": "🐔", "戌": "🐶", "亥": "🐷"
+  };
 
   const convert = (ganZhi) => {
     if (!ganZhi || ganZhi.length !== 2) return ["", "", ganZhi];
@@ -63,19 +71,13 @@ export default function BaziCalculator() {
     setBaziResult(data);
   };
 
-  const splitInterpretation = () => {
-    if (!baziResult?.interpretation) return [];
-    const parts = baziResult.interpretation.split(/^##\s+/gm);
-    return parts.length > 1 ? parts.slice(1).map((s) => "## " + s.trim()) : [baziResult.interpretation];
-  };
-
-  const sections = splitInterpretation();
-
   return (
     <div style={{ padding: "2rem", maxWidth: "700px", margin: "auto", fontFamily: "sans-serif" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h1>{labels[lang].title}</h1>
-        <button onClick={() => setLang(lang === "zh" ? "en" : "zh")}>{labels[lang].switchLang}</button>
+        <button onClick={() => setLang(lang === "zh" ? "en" : "zh")}>
+          {labels[lang].switchLang}
+        </button>
       </div>
 
       <div style={{ display: "grid", gap: "0.75rem" }}>
@@ -98,7 +100,10 @@ export default function BaziCalculator() {
             <option value="0">{lang === "zh" ? "女" : "Female"}</option>
           </select>
         </label>
-        <button onClick={calculateBazi} style={{ padding: "0.75rem", backgroundColor: "#ffcc00", border: "none", cursor: "pointer", fontWeight: "bold" }}>
+        <button
+          onClick={calculateBazi}
+          style={{ padding: "0.75rem", backgroundColor: "#ffcc00", border: "none", cursor: "pointer", fontWeight: "bold" }}
+        >
           {labels[lang].calculate}
         </button>
       </div>
@@ -121,9 +126,13 @@ export default function BaziCalculator() {
                 ))}
               </tbody>
             </table>
-            {sections[0] && (
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[0]}</ReactMarkdown>
-            )}
+          </div>
+
+          <div style={{ marginTop: "2rem", padding: "1rem", backgroundColor: "#fffbe6", borderRadius: "8px" }}>
+            <h3>📖 Gemini AI Interpretation</h3>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {baziResult.interpretation}
+            </ReactMarkdown>
           </div>
 
           <div style={{ marginTop: "1.5rem", backgroundColor: "#eef8ff", padding: "1rem", borderRadius: "8px" }}>
@@ -136,9 +145,6 @@ export default function BaziCalculator() {
                 ))}
               </tbody>
             </table>
-            {sections[1] && (
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[1]}</ReactMarkdown>
-            )}
           </div>
 
           <div style={{ marginTop: "1.5rem", backgroundColor: "#fff6ec", padding: "1rem", borderRadius: "8px" }}>
@@ -151,14 +157,13 @@ export default function BaziCalculator() {
                 ))}
               </tbody>
             </table>
-            {sections[2] && (
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[2]}</ReactMarkdown>
-            )}
           </div>
         </div>
       )}
 
-      <div style={{ marginTop: "2rem", textAlign: "center", fontSize: "0.9rem", color: "#666" }}>{labels[lang].disclaimer}</div>
+      <div style={{ marginTop: "2rem", textAlign: "center", fontSize: "0.9rem", color: "#666" }}>
+        {labels[lang].disclaimer}
+      </div>
     </div>
   );
 }
