@@ -109,7 +109,7 @@ export default function BaziCalculator() {
         </button>
       </div>
 
-      {baziResult && (
+      {/* {baziResult && (
         <div style={{ marginTop: "2rem" }}>
           <h2>{labels[lang].result}</h2>
 
@@ -160,7 +160,77 @@ export default function BaziCalculator() {
             </table>
           </div>
         </div>
-      )}
+      )} */}
+
+{baziResult && (
+  <div style={{ marginTop: "2rem" }}>
+    <h2>{labels[lang].result}</h2>
+
+    <div style={{ backgroundColor: "#f9f9f9", padding: "1rem", borderRadius: "8px" }}>
+      <h3>🧩 Four Pillars</h3>
+      <table style={{ width: "100%" }}>
+        <thead><tr><th>Pillar</th><th>Simplified</th><th>Traditional</th></tr></thead>
+        <tbody>
+          {["yearPillar", "monthPillar", "dayPillar", "hourPillar"].map((key) => (
+            <tr key={key}>
+              <td>{labels[lang][key]}</td>
+              <td>{convert(baziResult[key])[0]}{convert(baziResult[key])[1]}</td>
+              <td>{convert(baziResult[key])[2]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* 1️⃣ Gemini after Four Pillars */}
+      <div style={{ marginTop: "1rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
+        <h3>📖 Gemini AI Interpretation</h3>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {baziResult.interpretation}
+        </ReactMarkdown>
+      </div>
+    </div>
+
+    <div style={{ marginTop: "1.5rem", backgroundColor: "#eef8ff", padding: "1rem", borderRadius: "8px" }}>
+      <h3>🔮 DaYun (Decade Luck)</h3>
+      <table style={{ width: "100%" }}>
+        <thead><tr><th>Start Age</th><th>Age Range</th><th>Pillar</th></tr></thead>
+        <tbody>
+          {baziResult.dayun?.map((d, i) => (
+            <tr key={i}><td>{d.startAge}</td><td>{d.ageRange}</td><td>{d.pillar}</td></tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* 2️⃣ Gemini after DaYun */}
+      <div style={{ marginTop: "1rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
+        <h3>📖 Gemini AI Insights</h3>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {baziResult.interpretation}
+        </ReactMarkdown>
+      </div>
+    </div>
+
+    <div style={{ marginTop: "1.5rem", backgroundColor: "#fff6ec", padding: "1rem", borderRadius: "8px" }}>
+      <h3>📅 LiuNian (Annual Luck)</h3>
+      <table style={{ width: "100%" }}>
+        <thead><tr><th>Year</th><th>Pillar</th></tr></thead>
+        <tbody>
+          {baziResult.liunian?.map((d, i) => (
+            <tr key={i}><td>{d.year}</td><td>{d.pillar}</td></tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* 3️⃣ Gemini after LiuNian */}
+      <div style={{ marginTop: "1rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
+        <h3>📖 Gemini AI Forecast</h3>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {baziResult.interpretation}
+        </ReactMarkdown>
+      </div>
+    </div>
+  </div>
+)}
 
       <div style={{ marginTop: "2rem", textAlign: "center", fontSize: "0.9rem", color: "#666" }}>
         {labels[lang].disclaimer}
