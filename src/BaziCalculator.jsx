@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 export default function BaziCalculator() {
   const [formData, setFormData] = useState({
@@ -147,65 +148,6 @@ export default function BaziCalculator() {
         <button onClick={calculateBazi} style={{ padding: "0.75rem", backgroundColor: "#ffcc00", border: "none", cursor: "pointer", fontWeight: "bold" }}>{labels[lang].calculate}</button>
       </div>
 
-      {/* {baziResult && (
-        <>
-          <div style={{ marginTop: "2rem" }}>
-            <div style={{ display: "flex", gap: "1rem", justifyContent: "center", marginBottom: "1rem" }}>
-              <button onClick={() => setActiveTab("bazi")}>🧩 4 Pillars</button>
-              <button onClick={() => setActiveTab("dayun")}>🔮 Decade Luck Cycles</button>
-              <button onClick={() => setActiveTab("liunian")}>📅 Annual Luck Trend (LiuNian)</button>
-            </div>
-
-            {activeTab === "bazi" && (
-              <div style={{ padding: "1.5rem", backgroundColor: "#f9f9f9", borderRadius: "8px" }}>
-                <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>{labels[lang].result}</h2>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr>
-                      <th>4 Pillars</th><th>Simplified</th><th>Traditional</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {["yearPillar", "monthPillar", "dayPillar", "hourPillar"].map((key) => (
-                      <tr key={key}>
-                        <td>{labels[lang][key]}</td>
-                        <td>{convert(baziResult[key])[0]}{convert(baziResult[key])[1]}</td>
-                        <td>{convert(baziResult[key])[2]}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {activeTab === "dayun" && (
-              <table style={{ width: "100%", textAlign: "center", backgroundColor: "#f9f9f9" }}>
-                <thead>
-                  <tr><th>Start Age</th><th>Age Range</th><th>Luck Pillar</th></tr>
-                </thead>
-                <tbody>
-                  {baziResult.dayun?.map((d, i) => (
-                    <tr key={i}><td>{d.startAge}</td><td>{d.ageRange}</td><td>{d.pillar}</td></tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-
-            {activeTab === "liunian" && (
-              <table style={{ width: "100%", textAlign: "center", backgroundColor: "#f9f9f9" }}>
-                <thead>
-                  <tr><th>Year</th><th>Annual Pillar</th></tr>
-                </thead>
-                <tbody>
-                  {baziResult.liunian?.map((d, i) => (
-                    <tr key={i}><td>{d.year}</td><td>{d.pillar}</td></tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </>
-      )} */}
 
       {baziResult && (
         <div style={{ marginTop: "2rem" }}>
@@ -262,9 +204,16 @@ export default function BaziCalculator() {
           {baziResult.interpretation && (
             <div style={{ padding: "1.5rem", backgroundColor: "#fffbe6", borderRadius: "8px", marginBottom: "2rem" }}>
               <h3>📖 Gemini AI Interpretation</h3>
-              <div style={{ whiteSpace: "pre-wrap", lineHeight: "1.6" }}>
-                {baziResult.interpretation}
-              </div>
+              <ReactMarkdown
+                children={baziResult.interpretation}
+                components={{
+                  h1: ({ node, ...props }) => <h1 style={{ fontSize: "1.5rem", margin: "1rem 0" }} {...props} />,
+                  h2: ({ node, ...props }) => <h2 style={{ fontSize: "1.25rem", margin: "1rem 0" }} {...props} />,
+                  h3: ({ node, ...props }) => <h3 style={{ fontSize: "1.1rem", margin: "1rem 0" }} {...props} />,
+                  li: ({ node, ...props }) => <li style={{ marginBottom: "0.4rem" }} {...props} />,
+                  p: ({ node, ...props }) => <p style={{ marginBottom: "1rem" }} {...props} />,
+                }}
+              />
             </div>
           )}
         </div>
