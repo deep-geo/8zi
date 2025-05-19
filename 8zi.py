@@ -148,6 +148,12 @@ Structure it clearly using markdown.
         )
 
         gemini_reply = response.json()
+        print("🌐 Gemini raw response:", gemini_reply)  # <== Add this line
+
+        # Now safely check for 'candidates'
+        if "candidates" not in gemini_reply:
+            return {"error": "Gemini API returned no candidates", "raw": gemini_reply}
+
         message = gemini_reply["candidates"][0]["content"]["parts"][0]["text"]
         return {"interpretation": message.strip()}
 
