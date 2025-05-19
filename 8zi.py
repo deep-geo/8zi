@@ -155,7 +155,16 @@ Structure it clearly using markdown.
             return {"error": "Gemini API returned no candidates", "raw": gemini_reply}
 
         message = gemini_reply["candidates"][0]["content"]["parts"][0]["text"]
-        return {"interpretation": message.strip()}
+        # Remove unwanted intro if it exists
+        lines = message.strip().splitlines()
+        filtered_lines = [
+            line for line in lines 
+            if not line.strip().startswith("📖 Gemini AI Interpretation")
+            and not line.lower().startswith("okay, let's dive into this bazi chart")
+            and "this is a complex system" not in line.lower()
+        ]
+        cleaned_message = "\n".join(filtered_lines).strip()
+        return {"interpretation": cleaned_message}
 
     except Exception as e:
         print("❌ Error in interpret_bazi:", e)

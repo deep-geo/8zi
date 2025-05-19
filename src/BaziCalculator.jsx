@@ -9,6 +9,24 @@ export default function BaziCalculator() {
   const [baziResult, setBaziResult] = useState(null);
   const [lang, setLang] = useState("en");
 
+
+  const splitInterpretation = (interpretationText) => {
+    if (!interpretationText) return { personality: "", decadeLuck: "", annualLuck: "" };
+  
+    const parts = interpretationText.split(/##\s+(?=Personality|Decade Luck|Annual Luck)/);
+    let personality = "", decadeLuck = "", annualLuck = "";
+  
+    parts.forEach(part => {
+      if (part.startsWith("Personality")) personality = "## " + part.trim();
+      if (part.startsWith("Decade Luck")) decadeLuck = "## " + part.trim();
+      if (part.startsWith("Annual Luck")) annualLuck = "## " + part.trim();
+    });
+  
+    return { personality, decadeLuck, annualLuck };
+  };
+  
+  const { personality, decadeLuck, annualLuck } = splitInterpretation(baziResult?.interpretation);
+
   const labels = {
     zh: {
       title: "☯️ 八字排盘计算器", year: "出生年份：", month: "出生月份：", day: "出生日：",
@@ -109,58 +127,7 @@ export default function BaziCalculator() {
         </button>
       </div>
 
-      {/* {baziResult && (
-        <div style={{ marginTop: "2rem" }}>
-          <h2>{labels[lang].result}</h2>
 
-          <div style={{ backgroundColor: "#f9f9f9", padding: "1rem", borderRadius: "8px" }}>
-            <h3>🧩 Four Pillars</h3>
-            <table style={{ width: "100%" }}>
-              <thead><tr><th>Pillar</th><th>Simplified</th><th>Traditional</th></tr></thead>
-              <tbody>
-                {["yearPillar", "monthPillar", "dayPillar", "hourPillar"].map((key) => (
-                  <tr key={key}>
-                    <td>{labels[lang][key]}</td>
-                    <td>{convert(baziResult[key])[0]}{convert(baziResult[key])[1]}</td>
-                    <td>{convert(baziResult[key])[2]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div style={{ marginTop: "2rem", padding: "1rem", backgroundColor: "#fffbe6", borderRadius: "8px" }}>
-            <h3>📖 Gemini AI Interpretation</h3>
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {baziResult.interpretation}
-            </ReactMarkdown>
-          </div>
-
-          <div style={{ marginTop: "1.5rem", backgroundColor: "#eef8ff", padding: "1rem", borderRadius: "8px" }}>
-            <h3>🔮 DaYun (Decade Luck)</h3>
-            <table style={{ width: "100%" }}>
-              <thead><tr><th>Start Age</th><th>Age Range</th><th>Pillar</th></tr></thead>
-              <tbody>
-                {baziResult.dayun?.map((d, i) => (
-                  <tr key={i}><td>{d.startAge}</td><td>{d.ageRange}</td><td>{d.pillar}</td></tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div style={{ marginTop: "1.5rem", backgroundColor: "#fff6ec", padding: "1rem", borderRadius: "8px" }}>
-            <h3>📅 LiuNian (Annual Luck)</h3>
-            <table style={{ width: "100%" }}>
-              <thead><tr><th>Year</th><th>Pillar</th></tr></thead>
-              <tbody>
-                {baziResult.liunian?.map((d, i) => (
-                  <tr key={i}><td>{d.year}</td><td>{d.pillar}</td></tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )} */}
 
 {baziResult && (
   <div style={{ marginTop: "2rem" }}>
@@ -185,7 +152,7 @@ export default function BaziCalculator() {
       <div style={{ marginTop: "1rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
         <h3>📖 Gemini AI Interpretation</h3>
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {baziResult.interpretation}
+          {personality}
         </ReactMarkdown>
       </div>
     </div>
@@ -205,7 +172,7 @@ export default function BaziCalculator() {
       <div style={{ marginTop: "1rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
         <h3>📖 Gemini AI Insights</h3>
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {baziResult.interpretation}
+          {baziResult.decadeLuck}
         </ReactMarkdown>
       </div>
     </div>
@@ -225,7 +192,7 @@ export default function BaziCalculator() {
       <div style={{ marginTop: "1rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
         <h3>📖 Gemini AI Forecast</h3>
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {baziResult.interpretation}
+          {baziResult.annualLuck}
         </ReactMarkdown>
       </div>
     </div>
