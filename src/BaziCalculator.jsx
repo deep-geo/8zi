@@ -64,23 +64,12 @@ export default function BaziCalculator() {
   };
 
   const splitInterpretation = () => {
-    if (!baziResult?.interpretation) return ["", "", ""];
-    const parts = baziResult.interpretation.split(/^##\s+/gm).map(p => p.trim());
-
-    let baziText = "", dayunText = "", liunianText = "";
-    for (let part of parts) {
-      if (part.startsWith("Bazi Analysis:") || part.startsWith("1.") || part.startsWith("3.") || part.startsWith("4.")) {
-        baziText += "## " + part + "\n\n";
-      } else if (part.startsWith("2.")) {
-        dayunText += "## " + part + "\n\n";
-      } else if (part.startsWith("5.") || part.startsWith("6.")) {
-        liunianText += "## " + part + "\n\n";
-      }
-    }
-    return [baziText.trim(), dayunText.trim(), liunianText.trim()];
+    if (!baziResult?.interpretation) return [];
+    const parts = baziResult.interpretation.split(/^##\s+/gm);
+    return parts.length > 1 ? parts.slice(1).map((s) => "## " + s.trim()) : [baziResult.interpretation];
   };
 
-  const [baziMd, dayunMd, liunianMd] = splitInterpretation();
+  const sections = splitInterpretation();
 
   return (
     <div style={{ padding: "2rem", maxWidth: "700px", margin: "auto", fontFamily: "sans-serif" }}>
@@ -132,7 +121,9 @@ export default function BaziCalculator() {
                 ))}
               </tbody>
             </table>
-            {baziMd && <ReactMarkdown remarkPlugins={[remarkGfm]}>{baziMd}</ReactMarkdown>}
+            {sections[0] && (
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[0]}</ReactMarkdown>
+            )}
           </div>
 
           <div style={{ marginTop: "1.5rem", backgroundColor: "#eef8ff", padding: "1rem", borderRadius: "8px" }}>
@@ -145,7 +136,9 @@ export default function BaziCalculator() {
                 ))}
               </tbody>
             </table>
-            {dayunMd && <ReactMarkdown remarkPlugins={[remarkGfm]}>{dayunMd}</ReactMarkdown>}
+            {sections[1] && (
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[1]}</ReactMarkdown>
+            )}
           </div>
 
           <div style={{ marginTop: "1.5rem", backgroundColor: "#fff6ec", padding: "1rem", borderRadius: "8px" }}>
@@ -158,7 +151,9 @@ export default function BaziCalculator() {
                 ))}
               </tbody>
             </table>
-            {liunianMd && <ReactMarkdown remarkPlugins={[remarkGfm]}>{liunianMd}</ReactMarkdown>}
+            {sections[2] && (
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{sections[2]}</ReactMarkdown>
+            )}
           </div>
         </div>
       )}
