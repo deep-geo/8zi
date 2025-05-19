@@ -9,27 +9,23 @@ export default function BaziCalculator() {
   const [baziResult, setBaziResult] = useState(null);
   const [lang, setLang] = useState("en");
 
-
   const splitInterpretation = (interpretationText) => {
     if (!interpretationText) return { personality: "", decadeLuck: "", annualLuck: "" };
   
-    // Normalize the section numbers, strip ** for easier parsing
-    const cleanText = interpretationText.replace(/\*\*(\d+)\.\*\*/g, "$1.");
+    // Match sections by bold heading numbers like "**1.", "**2." etc.
+    const matchPersonality = interpretationText.match(/\*\*1\..*?(?=\*\*2\.)/s);
+    const matchDecadeLuck = interpretationText.match(/\*\*2\..*?(?=\*\*3\.|\*\*4\.|\*\*5\.|\*\*6\.|$)/s);
+    const matchAnnualLuck = interpretationText.match(/\*\*5\..*?(?=\*\*6\.|Advice|Summary|$)/s);
   
-    // Match sections by numbers only, ignoring titles
-    const matchPersonality = cleanText.match(/1\.\s*(.*?)\s*(?=2\.)/s);
-    const matchDecadeLuck = cleanText.match(/2\.\s*(.*?)\s*(?=3\.|$)/s);
-    const matchAnnualLuck = cleanText.match(/3\.\s*(.*?)\s*(?=4\.|Advice|Summary|$)/s);
-  
-    const safeTrim = (block) => block ? block.trim().replace(/\*+$/, "") : "";
+    const safeTrim = (text) => text?.trim().replace(/\*+$/, "") || "";
   
     return {
-      personality: matchPersonality ? "## Personality\n\n" + safeTrim(matchPersonality[1]) : "",
-      decadeLuck: matchDecadeLuck && matchDecadeLuck[1].length > 80
-        ? "## Decade Luck\n\n" + safeTrim(matchDecadeLuck[1])
+      personality: matchPersonality ? "## Personality\n\n" + safeTrim(matchPersonality[0]) : "",
+      decadeLuck: matchDecadeLuck && matchDecadeLuck[0].length > 80
+        ? "## Decade Luck\n\n" + safeTrim(matchDecadeLuck[0])
         : "",
-      annualLuck: matchAnnualLuck && matchAnnualLuck[1].length > 80
-        ? "## Annual Luck\n\n" + safeTrim(matchAnnualLuck[1])
+      annualLuck: matchAnnualLuck && matchAnnualLuck[0].length > 80
+        ? "## Annual Luck\n\n" + safeTrim(matchAnnualLuck[0])
         : "",
     };
   };
