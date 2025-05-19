@@ -9,7 +9,7 @@ export default function BaziCalculator() {
     gender: "1",
   });
   const [baziResult, setBaziResult] = useState(null);
-  const [lang, setLang] = useState("zh");
+  const [lang, setLang] = useState("en");
   const [activeTab, setActiveTab] = useState("bazi");
 
   const labels = {
@@ -37,7 +37,7 @@ export default function BaziCalculator() {
       year: "Birth Year:",
       month: "Birth Month:",
       day: "Birth Day:",
-      hour: "Hour of Borth (0–23):",
+      hour: "Hour of Birth (0–23):",
       gender: "Gender",
       placeholderYear: "e.g. 1990",
       placeholderMonth: "1 to 12",
