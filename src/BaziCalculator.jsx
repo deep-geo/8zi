@@ -129,7 +129,7 @@ export default function BaziCalculator() {
         <button onClick={calculateBazi} style={{ padding: "0.75rem", backgroundColor: "#ffcc00", border: "none", cursor: "pointer", fontWeight: "bold" }}>{labels[lang].calculate}</button>
       </div>
 
-      {baziResult && (
+      {/* {baziResult && (
         <>
           <div style={{ marginTop: "2rem" }}>
             <div style={{ display: "flex", gap: "1rem", justifyContent: "center", marginBottom: "1rem" }}>
@@ -187,6 +187,69 @@ export default function BaziCalculator() {
             )}
           </div>
         </>
+      )} */}
+
+      {baziResult && (
+        <div style={{ marginTop: "2rem" }}>
+          <h2 style={{ fontSize: "1.25rem", marginBottom: "1.5rem" }}>{labels[lang].result}</h2>
+
+          <div style={{ marginBottom: "2rem", padding: "1.5rem", backgroundColor: "#f9f9f9", borderRadius: "8px" }}>
+            <h3>🧩 Four Pillars</h3>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr>
+                  <th>Pillar</th><th>Simplified</th><th>Traditional</th>
+                </tr>
+              </thead>
+              <tbody>
+                {["yearPillar", "monthPillar", "dayPillar", "hourPillar"].map((key) => (
+                  <tr key={key}>
+                    <td>{labels[lang][key]}</td>
+                    <td>{convert(baziResult[key])[0]}{convert(baziResult[key])[1]}</td>
+                    <td>{convert(baziResult[key])[2]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ marginBottom: "2rem", padding: "1.5rem", backgroundColor: "#f0faff", borderRadius: "8px" }}>
+            <h3>🔮 Decade Luck Cycles (DaYun)</h3>
+            <table style={{ width: "100%", textAlign: "center" }}>
+              <thead>
+                <tr><th>Start Age</th><th>Age Range</th><th>Luck Pillar</th></tr>
+              </thead>
+              <tbody>
+                {baziResult.dayun?.map((d, i) => (
+                  <tr key={i}><td>{d.startAge}</td><td>{d.ageRange}</td><td>{d.pillar}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ marginBottom: "2rem", padding: "1.5rem", backgroundColor: "#fff7f0", borderRadius: "8px" }}>
+            <h3>📅 Annual Luck (LiuNian)</h3>
+            <table style={{ width: "100%", textAlign: "center" }}>
+              <thead>
+                <tr><th>Year</th><th>Annual Pillar</th></tr>
+              </thead>
+              <tbody>
+                {baziResult.liunian?.map((d, i) => (
+                  <tr key={i}><td>{d.year}</td><td>{d.pillar}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {baziResult.interpretation && (
+            <div style={{ padding: "1.5rem", backgroundColor: "#fffbe6", borderRadius: "8px", marginBottom: "2rem" }}>
+              <h3>📖 Gemini AI Interpretation</h3>
+              <div style={{ whiteSpace: "pre-wrap", lineHeight: "1.6" }}>
+                {baziResult.interpretation}
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       <div style={{ marginTop: "2rem", textAlign: "center", fontSize: "0.9rem", color: "#666" }}>
