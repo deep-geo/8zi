@@ -6,6 +6,7 @@ export default function BaziCalculator() {
     month: "",
     day: "",
     hour: "",
+    gender: "1",
   });
   const [baziResult, setBaziResult] = useState(null);
   const [lang, setLang] = useState("zh");
@@ -32,22 +33,23 @@ export default function BaziCalculator() {
       switchLang: "EN"
     },
     en: {
-      title: "☯️ Bazi Calculator",
-      year: "Year of Birth:",
-      month: "Month of Birth:",
-      day: "Day of Birth:",
-      hour: "Hour (0–23):",
+      title: "☯️ Chinese Destiny Chart Calculator",
+      year: "Birth Year:",
+      month: "Birth Month:",
+      day: "Birth Day:",
+      hour: "Hour of Borth (0–23):",
+      gender: "Gender",
       placeholderYear: "e.g. 1990",
       placeholderMonth: "1 to 12",
       placeholderDay: "1 to 31",
       placeholderHour: "e.g. 13 means 1 PM",
-      calculate: "🪐 Calculate Bazi",
-      result: "🧩 Bazi Result",
+      calculate: "🧠 Generate Destiny Chart",
+      result: "🧩 Four Pillars Result",
       yearPillar: "Year Pillar",
       monthPillar: "Month Pillar",
       dayPillar: "Day Pillar",
       hourPillar: "Hour Pillar",
-      disclaimer: "For reference only. Not professional advice.",
+      disclaimer: "For entertainment purposes only. Not professional advice.",
       switchLang: "中文"
     }
   };
@@ -63,6 +65,8 @@ export default function BaziCalculator() {
     "辰": "🐲", "巳": "🐍", "午": "🐴", "未": "🐑",
     "申": "🐵", "酉": "🐔", "戌": "🐶", "亥": "🐷"
   };
+
+  
 
   const convert = (ganZhi) => {
     if (!ganZhi || ganZhi.length !== 2) return ["", "", ganZhi];
@@ -112,6 +116,16 @@ export default function BaziCalculator() {
           {labels[lang].hour}
           <input type="number" name="hour" placeholder={labels[lang].placeholderHour} onChange={handleChange} style={{ width: "100%", padding: "0.5rem" }} />
         </label>
+
+        {/* ✅ INSERT GENDER SELECT HERE */}
+        <label>
+        {labels[lang].gender}
+        <select name="gender" onChange={handleChange} style={{ width: "100%", padding: "0.5rem" }}>
+          <option value="1">{lang === "zh" ? "男" : "Male"}</option>
+          <option value="0">{lang === "zh" ? "女" : "Female"}</option>
+        </select>
+        </label>
+
         <button onClick={calculateBazi} style={{ padding: "0.75rem", backgroundColor: "#ffcc00", border: "none", cursor: "pointer", fontWeight: "bold" }}>{labels[lang].calculate}</button>
       </div>
 
@@ -120,8 +134,8 @@ export default function BaziCalculator() {
           <div style={{ marginTop: "2rem" }}>
             <div style={{ display: "flex", gap: "1rem", justifyContent: "center", marginBottom: "1rem" }}>
               <button onClick={() => setActiveTab("bazi")}>🧩 4 Pillars</button>
-              <button onClick={() => setActiveTab("dayun")}>🔮 10-Year Luck (DaYun)</button>
-              <button onClick={() => setActiveTab("liunian")}>📅 Annual Lick (LiuNian)</button>
+              <button onClick={() => setActiveTab("dayun")}>🔮 Decade Luck Cycles</button>
+              <button onClick={() => setActiveTab("liunian")}>📅 Annual Luck Trend (LiuNian)</button>
             </div>
 
             {activeTab === "bazi" && (
@@ -180,7 +194,7 @@ export default function BaziCalculator() {
       </div>
 
       <div style={{ marginTop: "2rem", fontSize: "0.95rem", color: "#333", lineHeight: "1.6" }}>
-        <p><strong>📘 What is Bazi (八字)?</strong></p>
+        <p><strong>📘 What is Chinese Destiny Chart (八字)?</strong></p>
         <p>Bazi, or “Eight Characters,” is a traditional Chinese system based on your birth date and time. Each person’s Bazi is made up of four pairs of characters (Year, Month, Day, Hour), known as Heavenly Stems and Earthly Branches. Together, they reveal your energetic blueprint and destiny tendencies.</p>
         <p>八字是根据一个人的出生年、月、日、时，组合出四个天干地支对。它是中国传统命理的重要组成部分，可用于推测性格、运势、健康和人际关系等方面。</p>
       </div>
