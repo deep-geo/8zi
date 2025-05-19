@@ -10,19 +10,19 @@ export default function BaziCalculator() {
   const [lang, setLang] = useState("en");
 
 
+  // Updated split function to match Gemini output format
   const splitInterpretation = (interpretationText) => {
     if (!interpretationText) return { personality: "", decadeLuck: "", annualLuck: "" };
-  
-    const parts = interpretationText.split(/##\s+(?=Personality|Decade Luck|Annual Luck)/);
-    let personality = "", decadeLuck = "", annualLuck = "";
-  
-    parts.forEach(part => {
-      if (part.startsWith("Personality")) personality = "## " + part.trim();
-      if (part.startsWith("Decade Luck")) decadeLuck = "## " + part.trim();
-      if (part.startsWith("Annual Luck")) annualLuck = "## " + part.trim();
-    });
-  
-    return { personality, decadeLuck, annualLuck };
+
+    const matchPersonality = interpretationText.match(/\*\*1\..*?\*\*(.*?)\*\*2\./s);
+    const matchDecadeLuck = interpretationText.match(/\*\*3\..*?\*\*(.*?)\*\*4\./s);
+    const matchAnnualLuck = interpretationText.match(/\*\*6\..*?Annual Luck.*?\*\*(.*?)(\*\*7\.|\n\*\*General Advice|$)/s);
+
+    return {
+      personality: matchPersonality ? "**1.**" + matchPersonality[0].trim() : "",
+      decadeLuck: matchDecadeLuck ? "**3.**" + matchDecadeLuck[0].trim() : "",
+      annualLuck: matchAnnualLuck ? "**6.**" + matchAnnualLuck[0].trim() : "",
+    };
   };
   
   const { personality, decadeLuck, annualLuck } = splitInterpretation(baziResult?.interpretation);
@@ -150,7 +150,7 @@ export default function BaziCalculator() {
 
       {/* 1️⃣ Gemini after Four Pillars */}
       <div style={{ marginTop: "1rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
-        <h3>📖 Gemini AI Interpretation</h3>
+        <h3>📖 Interpretation</h3>
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {personality}
         </ReactMarkdown>
