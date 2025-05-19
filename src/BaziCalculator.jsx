@@ -67,6 +67,7 @@ export default function BaziCalculator() {
     });
 
     const interpretationData = await interpretResponse.json();
+    console.log("Gemini interpretation:", interpretationData);  // <-- Add this
     data.interpretation = interpretationData.interpretation;
     setBaziResult(data);
   };
