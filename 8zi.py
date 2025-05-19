@@ -137,7 +137,7 @@ Structure it clearly using markdown.
 """
 
         response = requests.post(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+            "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent",
             headers={"Content-Type": "application/json"},
             params={"key": GEMINI_API_KEY},
             json={
