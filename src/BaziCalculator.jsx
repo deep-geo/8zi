@@ -265,13 +265,24 @@ export default function BaziCalculator() {
             />
           </label>
         ))}
-        <label>
-          {labels[lang].gender}
-          <select name="gender" value={formData.gender} onChange={handleChange} style={{ width: "100%", padding: "0.5rem" }}>
-            <option value="1">{lang === "zh" ? "男" : "Male"}</option>
-            <option value="0">{lang === "zh" ? "女" : "Female"}</option>
-          </select>
-        </label>
+        <div>
+          <div style={{ marginBottom: "0.3rem" }}>{labels[lang].gender}</div>
+          <div style={{ display: "flex", gap: "1.5rem" }}>
+            {[{ value: "1", label: lang === "zh" ? "男 ♂" : "Male ♂" }, { value: "0", label: lang === "zh" ? "女 ♀" : "Female ♀" }].map(opt => (
+              <label key={opt.value} style={{ display: "flex", alignItems: "center", gap: "0.4rem", cursor: "pointer", fontSize: "1rem" }}>
+                <input
+                  type="radio"
+                  name="gender"
+                  value={opt.value}
+                  checked={formData.gender === opt.value}
+                  onChange={handleChange}
+                  style={{ width: "1.1rem", height: "1.1rem", cursor: "pointer" }}
+                />
+                {opt.label}
+              </label>
+            ))}
+          </div>
+        </div>
         <button
           onClick={calculateBazi}
           disabled={loading}
