@@ -8,6 +8,7 @@ export default function BaziCalculator() {
   });
   const [baziResult, setBaziResult] = useState(null);
   const [lang, setLang] = useState("en");
+  const [loading, setLoading] = useState(false);
 
   const splitInterpretation = (interpretationText) => {
     if (!interpretationText) return { personality: "", decadeLuck: "", annualLuck: "", takeaways: "" };
@@ -74,38 +75,42 @@ export default function BaziCalculator() {
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const calculateBazi = async () => {
-    const response = await fetch("https://eightzi.onrender.com/api/calculate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-    const data = await response.json();
+    setLoading(true);
+    try {
+      const response = await fetch("https://eightzi.onrender.com/api/calculate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
 
-    const interpretResponse = await fetch("https://eightzi.onrender.com/api/interpret", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        yearPillar: data.yearPillar,
-        monthPillar: data.monthPillar,
-        dayPillar: data.dayPillar,
-        hourPillar: data.hourPillar,
-        dayun: data.dayun,
-        liunian: data.liunian,
-      }),
-    });
+      const interpretResponse = await fetch("https://eightzi.onrender.com/api/interpret", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          yearPillar: data.yearPillar,
+          monthPillar: data.monthPillar,
+          dayPillar: data.dayPillar,
+          hourPillar: data.hourPillar,
+          dayun: data.dayun,
+          liunian: data.liunian,
+        }),
+      });
 
-    const interpretationData = await interpretResponse.json();
-    console.log("Gemini interpretation:", interpretationData);  // <-- Add this
-    // data.interpretation = interpretationData.interpretation;
+      const interpretationData = await interpretResponse.json();
 
-    // 🛡️ Error handling: if Gemini failed, set fallback interpretation
-    if (interpretationData?.error) {
-      data.interpretation = "⚠️ Sorry, the AI failed to generate a reading.";
-    } else {
-      data.interpretation = interpretationData.interpretation;
+      if (interpretationData?.error) {
+        data.interpretation = "⚠️ Sorry, the AI failed to generate a reading.";
+      } else {
+        data.interpretation = interpretationData.interpretation;
+      }
+
+      setBaziResult(data);
+    } catch (err) {
+      setBaziResult({ error: true, interpretation: "⚠️ Network error. Please try again." });
+    } finally {
+      setLoading(false);
     }
-
-    setBaziResult(data);
   };
 
   return (
@@ -139,10 +144,16 @@ export default function BaziCalculator() {
         </label>
         <button
           onClick={calculateBazi}
-          style={{ padding: "0.75rem", backgroundColor: "#ffcc00", border: "none", cursor: "pointer", fontWeight: "bold" }}
+          disabled={loading}
+          style={{ padding: "0.75rem", backgroundColor: loading ? "#ccc" : "#ffcc00", border: "none", cursor: loading ? "not-allowed" : "pointer", fontWeight: "bold" }}
         >
-          {labels[lang].calculate}
+          {loading ? (lang === "zh" ? "⏳ 计算中，请稍候…" : "⏳ Calculating, please wait…") : labels[lang].calculate}
         </button>
+        {loading && (
+          <div style={{ textAlign: "center", color: "#888", fontSize: "0.85rem" }}>
+            {lang === "zh" ? "首次加载服务器可能需要约 30 秒，请耐心等待。" : "First load may take ~30s while the server wakes up."}
+          </div>
+        )}
       </div>
 
 
