@@ -77,7 +77,7 @@ export default function BaziCalculator() {
     "庚": "金", "辛": "金", "申": "金", "酉": "金",
     "壬": "水", "癸": "水", "子": "水", "亥": "水",
   };
-  const elementColors = { "木": "#4CAF50", "火": "#F44336", "土": "#FF9800", "金": "#9E9E9E", "水": "#2196F3" };
+  const elementColors = { "木": "#4CAF50", "火": "#F44336", "土": "#FF9800", "金": "#9E9E9E", "水": "#222222" };
   const elementEmoji  = { "木": "🌳", "火": "🔥", "土": "🪨", "金": "⚙️", "水": "💧" };
   const elementNames  = { "木": lang === "zh" ? "木" : "Wood", "火": lang === "zh" ? "火" : "Fire", "土": lang === "zh" ? "土" : "Earth", "金": lang === "zh" ? "金" : "Metal", "水": lang === "zh" ? "水" : "Water" };
 
@@ -306,9 +306,9 @@ export default function BaziCalculator() {
             return (
               <tr key={key}>
                 <td>{labels[lang][key]}</td>
-                <td>
-                  <span style={{ color: stemColor, fontWeight: "bold", fontSize: "1.15rem" }}>{stem}</span>
-                  <span style={{ fontSize: "1.15rem" }}>{branchesMap[branch] || branch}</span>
+                <td style={{ fontSize: "1.3rem", letterSpacing: "0.05em" }}>
+                  {elementEmoji[elementMap[stem]] || stem}
+                  {branchesMap[branch] || branch}
                 </td>
                 <td>
                   <span style={{ color: stemColor, fontWeight: "bold" }}>{stem}</span>
