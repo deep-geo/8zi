@@ -76,6 +76,26 @@ export default function BaziCalculator() {
     return [stemsMap[stem] || stem, branchesMap[branch] || branch, ganZhi];
   };
 
+  const elementMap = {
+    "甲": "木", "乙": "木", "寅": "木", "卯": "木",
+    "丙": "火", "丁": "火", "巳": "火", "午": "火",
+    "戊": "土", "己": "土", "辰": "土", "戌": "土", "丑": "土", "未": "土",
+    "庚": "金", "辛": "金", "申": "金", "酉": "金",
+    "壬": "水", "癸": "水", "子": "水", "亥": "水",
+  };
+  const elementColors = { "木": "#4CAF50", "火": "#F44336", "土": "#FF9800", "金": "#9E9E9E", "水": "#2196F3" };
+  const elementEmoji  = { "木": "🌳", "火": "🔥", "土": "🪨", "金": "⚙️", "水": "💧" };
+  const elementNames  = { "木": lang === "zh" ? "木" : "Wood", "火": lang === "zh" ? "火" : "Fire", "土": lang === "zh" ? "土" : "Earth", "金": lang === "zh" ? "金" : "Metal", "水": lang === "zh" ? "水" : "Water" };
+
+  const calcElements = (result) => {
+    const counts = { "木": 0, "火": 0, "土": 0, "金": 0, "水": 0 };
+    [result.yearPillar, result.monthPillar, result.dayPillar, result.hourPillar].forEach(p => {
+      if (!p) return;
+      [...p].forEach(char => { if (elementMap[char]) counts[elementMap[char]]++; });
+    });
+    return counts;
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -293,6 +313,36 @@ export default function BaziCalculator() {
         </tbody>
       </table>
       </div>
+
+      {/* 五行分析 */}
+      {(() => {
+        const counts = calcElements(baziResult);
+        const total = Object.values(counts).reduce((a, b) => a + b, 0);
+        return (
+          <div style={{ marginTop: "1rem", backgroundColor: "#fff", border: "1px solid #eee", padding: "1rem", borderRadius: "8px" }}>
+            <h3 style={{ marginTop: 0 }}>{lang === "zh" ? "⚖️ 五行分析" : "⚖️ Five Elements Balance"}</h3>
+            {["木", "火", "土", "金", "水"].map(el => (
+              <div key={el} style={{ marginBottom: "0.7rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.2rem" }}>
+                  <span style={{ fontSize: "1.1rem" }}>{elementEmoji[el]}</span>
+                  <span style={{ fontWeight: "bold", width: "2.5rem" }}>{elementNames[el]}</span>
+                  <span style={{ color: "#888", fontSize: "0.85rem" }}>{"●".repeat(counts[el])}{counts[el] === 0 ? "—" : ""}</span>
+                </div>
+                <div style={{ backgroundColor: "#e8e8e8", borderRadius: "6px", height: "14px", overflow: "hidden" }}>
+                  <div style={{
+                    width: total > 0 ? `${(counts[el] / total) * 100}%` : "0%",
+                    backgroundColor: elementColors[el],
+                    height: "100%",
+                    borderRadius: "6px",
+                    transition: "width 0.6s ease",
+                    minWidth: counts[el] > 0 ? "8px" : "0",
+                  }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      })()}
 
       {/* 1️⃣ Gemini after Four Pillars */}
       <div style={{ marginTop: "1rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
