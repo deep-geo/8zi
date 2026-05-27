@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { supabase } from "./supabaseClient";
 
 export default function BaziCalculator() {
   const [formData, setFormData] = useState({
@@ -9,6 +10,9 @@ export default function BaziCalculator() {
   const [baziResult, setBaziResult] = useState(null);
   const [lang, setLang] = useState("en");
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
 
   const splitInterpretation = (interpretationText) => {
     if (!interpretationText) return { personality: "", decadeLuck: "", annualLuck: "", takeaways: "" };
@@ -72,6 +76,42 @@ export default function BaziCalculator() {
     return [stemsMap[stem] || stem, branchesMap[branch] || branch, ganZhi];
   };
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) loadHistory(session.user.id);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) loadHistory(session.user.id);
+      else setHistory([]);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const loadHistory = async (userId) => {
+    const { data } = await supabase
+      .from('bazi_history')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(10);
+    setHistory(data || []);
+  };
+
+  const handleGoogleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin }
+    });
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
+
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const calculateBazi = async () => {
@@ -106,6 +146,23 @@ export default function BaziCalculator() {
       }
 
       setBaziResult(data);
+
+      if (user) {
+        await supabase.from('bazi_history').insert({
+          user_id: user.id,
+          birth_year: parseInt(formData.year),
+          birth_month: parseInt(formData.month),
+          birth_day: parseInt(formData.day),
+          birth_hour: parseInt(formData.hour),
+          gender: parseInt(formData.gender),
+          year_pillar: data.yearPillar,
+          month_pillar: data.monthPillar,
+          day_pillar: data.dayPillar,
+          hour_pillar: data.hourPillar,
+          interpretation: data.interpretation,
+        });
+        loadHistory(user.id);
+      }
     } catch (err) {
       setBaziResult({ error: true, interpretation: "⚠️ Network error. Please try again." });
     } finally {
@@ -115,11 +172,36 @@ export default function BaziCalculator() {
 
   return (
     <div style={{ padding: "2rem", maxWidth: "700px", margin: "auto", fontFamily: "sans-serif" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>{labels[lang].title}</h1>
-        <button onClick={() => setLang(lang === "zh" ? "en" : "zh")}>
-          {labels[lang].switchLang}
-        </button>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+        <h1 style={{ margin: 0 }}>{labels[lang].title}</h1>
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <button onClick={() => setLang(lang === "zh" ? "en" : "zh")}>
+            {labels[lang].switchLang}
+          </button>
+          {user ? (
+            <>
+              <button
+                onClick={() => setShowHistory(!showHistory)}
+                style={{ padding: "0.4rem 0.8rem", backgroundColor: "#eef8ff", border: "1px solid #ccc", borderRadius: "4px", cursor: "pointer" }}
+              >
+                {lang === "zh" ? "历史记录" : "History"}
+              </button>
+              <button
+                onClick={handleLogout}
+                style={{ padding: "0.4rem 0.8rem", border: "1px solid #ccc", borderRadius: "4px", cursor: "pointer" }}
+              >
+                {lang === "zh" ? "登出" : "Logout"}
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={handleGoogleLogin}
+              style={{ padding: "0.4rem 0.8rem", backgroundColor: "#4285f4", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontWeight: "bold" }}
+            >
+              {lang === "zh" ? "Google 登录" : "Sign in with Google"}
+            </button>
+          )}
+        </div>
       </div>
 
       <div style={{ display: "grid", gap: "0.75rem" }}>
@@ -235,6 +317,31 @@ export default function BaziCalculator() {
     </div>
   </div>
 )}
+
+      {user && showHistory && (
+        <div style={{ marginTop: "2rem" }}>
+          <h2>{lang === "zh" ? "历史记录" : "My History"}</h2>
+          {history.length === 0 ? (
+            <p style={{ color: "#888" }}>{lang === "zh" ? "暂无记录，算一次命盘后自动保存。" : "No records yet. Your charts will be saved automatically."}</p>
+          ) : (
+            history.map((item) => (
+              <div key={item.id} style={{ backgroundColor: "#f5f5f5", padding: "1rem", borderRadius: "8px", marginBottom: "0.75rem" }}>
+                <div style={{ fontSize: "0.8rem", color: "#999", marginBottom: "0.3rem" }}>
+                  {new Date(item.created_at).toLocaleString(lang === "zh" ? "zh-CN" : "en-US")}
+                </div>
+                <div style={{ fontWeight: "bold" }}>
+                  {item.birth_year}/{item.birth_month}/{item.birth_day}&nbsp;
+                  {lang === "zh" ? `${item.birth_hour}时` : `${item.birth_hour}:00`}&nbsp;·&nbsp;
+                  {item.gender === 1 ? (lang === "zh" ? "男" : "Male") : (lang === "zh" ? "女" : "Female")}
+                </div>
+                <div style={{ marginTop: "0.3rem", letterSpacing: "0.1em" }}>
+                  {item.year_pillar} {item.month_pillar} {item.day_pillar} {item.hour_pillar}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
 
       <div style={{ marginTop: "2rem", textAlign: "center", fontSize: "0.9rem", color: "#666" }}>
         {labels[lang].disclaimer}
