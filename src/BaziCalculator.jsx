@@ -38,9 +38,16 @@ export default function BaziCalculator() {
 
   const isError = baziResult?.interpretation?.includes("⚠️ Sorry");
 
-    const { personality, decadeLuck, annualLuck, takeaways } = isError
+  const parsedSections = isError
     ? { personality: baziResult.interpretation, decadeLuck: "", annualLuck: "", takeaways: "" }
     : splitInterpretation(baziResult?.interpretation);
+
+  // Fallback: if regex parsing yields nothing, show full interpretation in personality slot
+  const { personality, decadeLuck, annualLuck, takeaways } = (
+    !parsedSections.personality && !isError && baziResult?.interpretation
+  )
+    ? { personality: baziResult.interpretation, decadeLuck: "", annualLuck: "", takeaways: "" }
+    : parsedSections;
 
   const labels = {
     zh: {
