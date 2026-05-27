@@ -258,6 +258,7 @@ export default function BaziCalculator() {
             <input
               type="number"
               name={field}
+              value={formData[field]}
               placeholder={labels[lang][`placeholder${field.charAt(0).toUpperCase() + field.slice(1)}`]}
               onChange={handleChange}
               style={{ width: "100%", padding: "0.5rem" }}
@@ -266,7 +267,7 @@ export default function BaziCalculator() {
         ))}
         <label>
           {labels[lang].gender}
-          <select name="gender" onChange={handleChange} style={{ width: "100%", padding: "0.5rem" }}>
+          <select name="gender" value={formData.gender} onChange={handleChange} style={{ width: "100%", padding: "0.5rem" }}>
             <option value="1">{lang === "zh" ? "男" : "Male"}</option>
             <option value="0">{lang === "zh" ? "女" : "Female"}</option>
           </select>
