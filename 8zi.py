@@ -79,7 +79,7 @@ def calculate_bazi(data: BaziRequest):
             for i in range(5):
                 y = current_year + i
                 try:
-                    lunar_y = Solar(y, 1, 1, 12, 0, 0).getLunar()
+                    lunar_y = Solar(y, 6, 1, 12, 0, 0).getLunar()
                     ec_y = lunar_y.getEightChar()
                     liunian_list.append({
                         "year": y,
