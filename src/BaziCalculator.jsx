@@ -193,9 +193,20 @@ export default function BaziCalculator() {
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "700px", margin: "auto", fontFamily: "sans-serif" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-        <h1 style={{ margin: 0 }}>{labels[lang].title}</h1>
+    <div className="bazi-container" style={{ padding: "2rem", maxWidth: "700px", margin: "auto", fontFamily: "sans-serif" }}>
+      <style>{`
+        @media (max-width: 500px) {
+          .bazi-container { padding: 1rem !important; }
+          .bazi-title { font-size: 1.2rem !important; }
+          .bazi-header { flex-direction: column !important; align-items: flex-start !important; }
+          .bazi-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+          .bazi-table { font-size: 0.82rem; min-width: 260px; }
+          .bazi-table th, .bazi-table td { padding: 0.25rem 0.4rem; }
+          input[type="number"], select { font-size: 16px !important; box-sizing: border-box; }
+        }
+      `}</style>
+      <div className="bazi-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+        <h1 className="bazi-title" style={{ margin: 0 }}>{labels[lang].title}</h1>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           <button onClick={() => setLang(lang === "zh" ? "en" : "zh")}>
             {labels[lang].switchLang}
@@ -268,7 +279,8 @@ export default function BaziCalculator() {
 
     <div style={{ backgroundColor: "#f9f9f9", padding: "1rem", borderRadius: "8px" }}>
       <h3>🧩 Four Pillars</h3>
-      <table style={{ width: "100%" }}>
+      <div className="bazi-table-wrapper">
+      <table className="bazi-table" style={{ width: "100%" }}>
         <thead><tr><th>Pillar</th><th>Simplified</th><th>Traditional</th></tr></thead>
         <tbody>
           {["yearPillar", "monthPillar", "dayPillar", "hourPillar"].map((key) => (
@@ -280,6 +292,7 @@ export default function BaziCalculator() {
           ))}
         </tbody>
       </table>
+      </div>
 
       {/* 1️⃣ Gemini after Four Pillars */}
       <div style={{ marginTop: "1rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
@@ -292,7 +305,8 @@ export default function BaziCalculator() {
 
     <div style={{ marginTop: "1.5rem", backgroundColor: "#eef8ff", padding: "1rem", borderRadius: "8px" }}>
       <h3>🔮 DaYun (Decade Luck)</h3>
-      <table style={{ width: "100%" }}>
+      <div className="bazi-table-wrapper">
+      <table className="bazi-table" style={{ width: "100%" }}>
         <thead><tr><th>Start Age</th><th>Age Range</th><th>Pillar</th></tr></thead>
         <tbody>
           {baziResult.dayun?.map((d, i) => (
@@ -300,6 +314,7 @@ export default function BaziCalculator() {
           ))}
         </tbody>
       </table>
+      </div>
 
       {/* 2️⃣ Gemini after DaYun */}
       <div style={{ marginTop: "1rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
@@ -312,7 +327,8 @@ export default function BaziCalculator() {
 
     <div style={{ marginTop: "1.5rem", backgroundColor: "#fff6ec", padding: "1rem", borderRadius: "8px" }}>
       <h3>📅 LiuNian (Annual Luck)</h3>
-      <table style={{ width: "100%" }}>
+      <div className="bazi-table-wrapper">
+      <table className="bazi-table" style={{ width: "100%" }}>
         <thead><tr><th>Year</th><th>Pillar</th></tr></thead>
         <tbody>
           {baziResult.liunian?.map((d, i) => (
@@ -320,6 +336,7 @@ export default function BaziCalculator() {
           ))}
         </tbody>
       </table>
+      </div>
 
       {/* 3️⃣ Gemini after LiuNian */}
       <div style={{ marginTop: "1rem", backgroundColor: "#fffbe6", padding: "1rem", borderRadius: "8px" }}>
