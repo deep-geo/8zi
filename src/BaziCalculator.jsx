@@ -359,6 +359,55 @@ export default function BaziCalculator() {
                 </div>
               </div>
             ))}
+
+            {/* 月令对日主的影响 */}
+            {(() => {
+              const dayMasterStem = baziResult.dayPillar?.[0];
+              const monthBranch   = baziResult.monthPillar?.[1];
+              const dayEl   = elementMap[dayMasterStem];
+              const monthEl = elementMap[monthBranch];
+              if (!dayEl || !monthEl) return null;
+
+              const generates = { "木": "火", "火": "土", "土": "金", "金": "水", "水": "木" };
+              const controls  = { "木": "土", "土": "水", "水": "火", "火": "金", "金": "木" };
+
+              let msg, borderColor;
+              if (dayEl === monthEl) {
+                msg = lang === "zh"
+                  ? `月令 ${monthBranch}（${monthEl}）与日主 ${dayMasterStem}（${dayEl}）同元素 → 日主得令，力量强旺。`
+                  : `Month Branch ${monthBranch} (${elementNames[monthEl]}) = same element as Day Master ${dayMasterStem} (${elementNames[dayEl]}) → Day Master is in season, strong.`;
+                borderColor = "#4CAF50";
+              } else if (generates[monthEl] === dayEl) {
+                msg = lang === "zh"
+                  ? `月令 ${monthBranch}（${monthEl}）生日主 ${dayMasterStem}（${dayEl}）→ 日主得到月令滋养，力量偏强。`
+                  : `Month Branch ${monthBranch} (${elementNames[monthEl]}) generates Day Master ${dayMasterStem} (${elementNames[dayEl]}) → Day Master is nourished and strong.`;
+                borderColor = "#4CAF50";
+              } else if (controls[monthEl] === dayEl) {
+                msg = lang === "zh"
+                  ? `月令 ${monthBranch}（${monthEl}）克日主 ${dayMasterStem}（${dayEl}）→ 日主受月令压制，力量偏弱。`
+                  : `Month Branch ${monthBranch} (${elementNames[monthEl]}) controls Day Master ${dayMasterStem} (${elementNames[dayEl]}) → Day Master is suppressed, tends to be weak.`;
+                borderColor = "#F44336";
+              } else if (generates[dayEl] === monthEl) {
+                msg = lang === "zh"
+                  ? `日主 ${dayMasterStem}（${dayEl}）生月令 ${monthBranch}（${monthEl}）→ 日主泄气，力量偏弱。`
+                  : `Day Master ${dayMasterStem} (${elementNames[dayEl]}) feeds Month Branch ${monthBranch} (${elementNames[monthEl]}) → Day Master expends energy, tends to be weak.`;
+                borderColor = "#FF9800";
+              } else {
+                msg = lang === "zh"
+                  ? `日主 ${dayMasterStem}（${dayEl}）克月令 ${monthBranch}（${monthEl}）→ 日主主动控制，力量中等偏强。`
+                  : `Day Master ${dayMasterStem} (${elementNames[dayEl]}) controls Month Branch ${monthBranch} (${elementNames[monthEl]}) → Day Master is dominant, moderate strength.`;
+                borderColor = "#FF9800";
+              }
+
+              return (
+                <div style={{ marginTop: "1rem", padding: "0.75rem 1rem", backgroundColor: "#f9f9f9", borderLeft: `4px solid ${borderColor}`, borderRadius: "4px" }}>
+                  <div style={{ fontWeight: "bold", fontSize: "0.85rem", color: "#555", marginBottom: "0.3rem" }}>
+                    {lang === "zh" ? "月令对日主的影响" : "Month Branch Influence on Day Master"}
+                  </div>
+                  <div style={{ fontSize: "0.9rem", lineHeight: 1.7 }}>{msg}</div>
+                </div>
+              );
+            })()}
           </div>
         );
       })()}
