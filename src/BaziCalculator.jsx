@@ -70,12 +70,6 @@ export default function BaziCalculator() {
     "午": "🐴", "未": "🐑", "申": "🐵", "酉": "🐔", "戌": "🐶", "亥": "🐷"
   };
 
-  const convert = (ganZhi) => {
-    if (!ganZhi || ganZhi.length !== 2) return ["", "", ganZhi];
-    const [stem, branch] = ganZhi.split("");
-    return [stemsMap[stem] || stem, branchesMap[branch] || branch, ganZhi];
-  };
-
   const elementMap = {
     "甲": "木", "乙": "木", "寅": "木", "卯": "木",
     "丙": "火", "丁": "火", "巳": "火", "午": "火",
@@ -303,13 +297,26 @@ export default function BaziCalculator() {
       <table className="bazi-table" style={{ width: "100%" }}>
         <thead><tr><th>Pillar</th><th>Simplified</th><th>Traditional</th></tr></thead>
         <tbody>
-          {["yearPillar", "monthPillar", "dayPillar", "hourPillar"].map((key) => (
-            <tr key={key}>
-              <td>{labels[lang][key]}</td>
-              <td>{convert(baziResult[key])[0]}{convert(baziResult[key])[1]}</td>
-              <td>{convert(baziResult[key])[2]}</td>
-            </tr>
-          ))}
+          {["yearPillar", "monthPillar", "dayPillar", "hourPillar"].map((key) => {
+            const ganZhi = baziResult[key] || "";
+            const stem = ganZhi[0];
+            const branch = ganZhi[1];
+            const stemColor = elementColors[elementMap[stem]] || "#333";
+            const branchColor = elementColors[elementMap[branch]] || "#333";
+            return (
+              <tr key={key}>
+                <td>{labels[lang][key]}</td>
+                <td>
+                  <span style={{ color: stemColor, fontWeight: "bold", fontSize: "1.15rem" }}>{stem}</span>
+                  <span style={{ fontSize: "1.15rem" }}>{branchesMap[branch] || branch}</span>
+                </td>
+                <td>
+                  <span style={{ color: stemColor, fontWeight: "bold" }}>{stem}</span>
+                  <span style={{ color: branchColor, fontWeight: "bold" }}>{branch}</span>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       </div>
