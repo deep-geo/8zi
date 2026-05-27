@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from lunar_python import Solar
 import logging
 import os
+from datetime import datetime
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
@@ -74,8 +75,9 @@ def calculate_bazi(data: BaziRequest):
         # LiuNian (Use yearly solar start date to get correct year pillar)
         try:
             liunian_list = []
-            for i in range(5):  # e.g., next 5 years
-                y = 2025 + i
+            current_year = datetime.now().year
+            for i in range(5):
+                y = current_year + i
                 try:
                     lunar_y = Solar(y, 1, 1, 12, 0, 0).getLunar()
                     ec_y = lunar_y.getEightChar()
