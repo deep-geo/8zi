@@ -48,7 +48,7 @@ export default function BaziCalculator() {
       hour: "出生时辰（小时制 0-23）：", gender: "性别", placeholderYear: "例如 1990",
       placeholderMonth: "1 到 12", placeholderDay: "1 到 31", placeholderHour: "例如 13 代表下午 1 点",
       calculate: "🪐 计算八字", result: "🧩 排盘结果", yearPillar: "年柱", monthPillar: "月柱",
-      dayPillar: "日柱", hourPillar: "时柱", disclaimer: "本站仅供参考，不构成任何人生决策建议。",
+      dayPillar: "日柱", hourPillar: "时柱", disclaimer: "本站仅供参考，不构成任何人生决策建议。我们存储您的生日以展示历史记录，您可随时在历史记录中删除所有数据。",
       switchLang: "EN"
     },
     en: {
@@ -57,7 +57,7 @@ export default function BaziCalculator() {
       placeholderMonth: "1 to 12", placeholderDay: "1 to 31", placeholderHour: "e.g. 13 means 1 PM",
       calculate: "🧠 Generate Destiny Chart", result: "🧩 Four Pillars Result", yearPillar: "Year Pillar",
       monthPillar: "Month Pillar", dayPillar: "Day Pillar", hourPillar: "Hour Pillar",
-      disclaimer: "For entertainment purposes only. Not professional advice.", switchLang: "中文"
+      disclaimer: "For entertainment purposes only. Not professional advice. We store your birth data to show history — you can delete it anytime from the History panel.", switchLang: "中文"
     }
   };
 
@@ -110,6 +110,15 @@ export default function BaziCalculator() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+  };
+
+  const handleDeleteAllData = async () => {
+    const msg = lang === "zh"
+      ? "确定删除所有历史记录？此操作不可撤销。"
+      : "Delete all your saved data? This cannot be undone.";
+    if (!window.confirm(msg)) return;
+    await supabase.from('bazi_history').delete().eq('user_id', user.id);
+    setHistory([]);
   };
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -320,7 +329,17 @@ export default function BaziCalculator() {
 
       {user && showHistory && (
         <div style={{ marginTop: "2rem" }}>
-          <h2>{lang === "zh" ? "历史记录" : "My History"}</h2>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h2 style={{ margin: 0 }}>{lang === "zh" ? "历史记录" : "My History"}</h2>
+            {history.length > 0 && (
+              <button
+                onClick={handleDeleteAllData}
+                style={{ padding: "0.3rem 0.7rem", backgroundColor: "#fff0f0", color: "#cc0000", border: "1px solid #ffcccc", borderRadius: "4px", cursor: "pointer", fontSize: "0.85rem" }}
+              >
+                {lang === "zh" ? "删除所有数据" : "Delete my data"}
+              </button>
+            )}
+          </div>
           {history.length === 0 ? (
             <p style={{ color: "#888" }}>{lang === "zh" ? "暂无记录，算一次命盘后自动保存。" : "No records yet. Your charts will be saved automatically."}</p>
           ) : (
