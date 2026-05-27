@@ -96,9 +96,22 @@ export default function BaziCalculator() {
       .from('bazi_history')
       .select('*')
       .eq('user_id', userId)
+      .not('birth_year', 'is', null)
       .order('created_at', { ascending: false })
       .limit(10);
     setHistory(data || []);
+  };
+
+  const handleLoadFromHistory = (item) => {
+    setFormData({
+      year: String(item.birth_year),
+      month: String(item.birth_month),
+      day: String(item.birth_day),
+      hour: String(item.birth_hour),
+      gender: String(item.gender),
+    });
+    setShowHistory(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleGoogleLogin = async () => {
@@ -344,7 +357,13 @@ export default function BaziCalculator() {
             <p style={{ color: "#888" }}>{lang === "zh" ? "暂无记录，算一次命盘后自动保存。" : "No records yet. Your charts will be saved automatically."}</p>
           ) : (
             history.map((item) => (
-              <div key={item.id} style={{ backgroundColor: "#f5f5f5", padding: "1rem", borderRadius: "8px", marginBottom: "0.75rem" }}>
+              <div
+                key={item.id}
+                onClick={() => handleLoadFromHistory(item)}
+                style={{ backgroundColor: "#f5f5f5", padding: "1rem", borderRadius: "8px", marginBottom: "0.75rem", cursor: "pointer", transition: "background 0.15s" }}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = "#e8e8e8"}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = "#f5f5f5"}
+              >
                 <div style={{ fontSize: "0.8rem", color: "#999", marginBottom: "0.3rem" }}>
                   {new Date(item.created_at).toLocaleString(lang === "zh" ? "zh-CN" : "en-US")}
                 </div>
@@ -355,6 +374,9 @@ export default function BaziCalculator() {
                 </div>
                 <div style={{ marginTop: "0.3rem", letterSpacing: "0.1em" }}>
                   {item.year_pillar} {item.month_pillar} {item.day_pillar} {item.hour_pillar}
+                </div>
+                <div style={{ marginTop: "0.4rem", fontSize: "0.8rem", color: "#aaa" }}>
+                  {lang === "zh" ? "点击重新加载 →" : "Click to load →"}
                 </div>
               </div>
             ))
