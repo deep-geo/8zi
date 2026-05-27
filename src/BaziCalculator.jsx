@@ -215,7 +215,7 @@ export default function BaziCalculator() {
           .bazi-header { flex-direction: column !important; align-items: flex-start !important; }
           .bazi-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
           .bazi-table { font-size: 0.82rem; min-width: 260px; }
-          .bazi-table th, .bazi-table td { padding: 0.25rem 0.4rem; }
+          .bazi-table th, .bazi-table td { padding: 0.25rem 0.4rem; text-align: center; }
           input[type="number"], select { font-size: 16px !important; box-sizing: border-box; }
         }
       `}</style>
